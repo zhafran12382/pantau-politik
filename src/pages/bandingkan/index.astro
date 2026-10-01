@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import ComparisonPanel from '../../components/comparison/ComparisonPanel.astro';
+import CompareToolbar from '../../components/comparison/CompareToolbar.astro';
+import administrations from '../../../content/administrations/administrations.json';
+import indicators from '../../../content/indicators/indicators.json';
+import observations from '../../../content/observations/observations.json';
+import sources from '../../../content/sources/sources.json';
+import markers from '../../../content/context-markers.json';
+import { comparisonFor } from '../../lib/comparison/compute.mjs';
+import { DEFAULT_COMPARISON } from '../../lib/comparison/url.mjs';
+const indicator = indicators.find(item => item.id === DEFAULT_COMPARISON.indikator)!;
+const comparison = comparisonFor(indicator, administrations, observations, DEFAULT_COMPARISON.a, DEFAULT_COMPARISON.b);
+const clientData = JSON.stringify({ administrations, indicators, observations, sources, contextMarkers: markers }).replaceAll('<', '\\u003c');
+const labels: Record<string, string> = { 'pdb-growth': 'Pertumbuhan PDB riil', kemiskinan: 'Kemiskinan', tpt: 'Pengangguran terbuka', gini: 'Gini pengeluaran', inflasi: 'Inflasi IHK' };
+---
+<Base title="Bandingkan satu indikator antar dua periode" description="Baca tren nasional melalui periode, satuan, grafik, tabel, dan metode yang jelas." canonicalPath="/bandingkan/">
+  <nav class="breadcrumb" aria-label="Jejak halaman"><a href="/">Pantau</a> <span aria-hidden="true">/</span> <span aria-current="page">Bandingkan</span></nav>
+  <header class="page-intro"><div class="frontpage-kicker"><span class="eyebrow">Exhibit data · Pembanding</span><span class="stamp" role="note">Draf pratinjau — belum audit</span></div><h1>Bandingkan satu indikator<br />antar dua periode.</h1><p class="lead">Satu indikator dalam satu waktu, dua periode pemerintahan. Angka menggambarkan kondisi, bukan bukti sebab-akibat.</p><p class="dateline"><span class="file-code">Berkas PP-Exhibit / Compare</span><span>Periode tetap: dua pemerintahan yang telah selesai. Pilihan awal adalah bawaan produk.</span></p></header>
+  <CompareToolbar />
+  <p id="compareNotice" class="notice notice--warning" role="status" hidden></p>
+  <p id="compareStatus" class="sr-only" role="status" aria-live="polite"></p>
+  <p class="meta section-block">Dataset pratinjau: angka awal belum menyelesaikan audit editorial terhadap dokumen sumber. <a href="/metode/">Baca batas penggunaannya.</a></p>
+  <ComparisonPanel comparison={comparison} indicator={indicator} markers={markers} interactive />
+  <script id="compare-data" type="application/json" is:inline set:html={clientData} />
+</Base>
+<script>
+  import { initComparison } from '../../client/compare.mjs';
+  initComparison(document, window);
+</script>

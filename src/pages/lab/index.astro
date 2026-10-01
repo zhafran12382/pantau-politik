@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+// Halaman uji development: TIDAK untuk publik. Spesimen ekstrem komponen arah A.
+---
+<Base title="Lab komponen" description="Spesimen development, tidak diindeks." canonicalPath="/lab/" noindex>
+  <p class="eyebrow">Lab development</p>
+  <h1>Judul pendek</h1>
+  <h2>Judul sangat panjang yang menguji wrapping pada viewport sempit: bagaimana subsidi energi diputuskan dalam APBN dan apa dampaknya bagi rumah tangga serta fiskal negara?</h2>
+  <p class="meta">PP-001 · PP-999 (tanpa isu) · Diperiksa 25 September 2026 · Belum diperiksa ulang sejak 1 Januari 2020</p>
+  <p>
+    <span class="chip chip--dev">Sedang berkembang</span>
+    <span class="chip chip--wait">Menunggu keputusan</span>
+    <span class="chip chip--done">Diterapkan</span>
+    <span class="chip chip--arch">Diarsipkan</span>
+    <span class="chip chip--count">0 sumber</span>
+  </p>
+  <p>
+    <button type="button">Tombol utama</button>
+    <button type="button" class="button--secondary">Tombol sekunder</button>
+    <button type="button" disabled>Disabled tanpa alasan (JANGAN — harus ada alasan tertulis)</button>
+  </p>
+  <p><label for="lab-select">Contoh select</label>
+  <select id="lab-select"><option>Opsi pendek</option><option>Opsi dengan teks yang sangat panjang untuk menguji wrapping dan overflow pada kontrol sempit</option></select></p>
+  <article class="issue-card issue-card--featured">
+    <div class="issue-card__top"><span class="issue-card__category">KATEGORI SANGAT PANJANG SEKALI</span><span class="chip chip--dev">Sedang berkembang</span></div>
+    <h3><a class="issue-title-link" href="/lab/">Judul entri dengan panjang ekstrem untuk memastikan tidak ada pemotongan informasi penting</a></h3>
+    <p class="issue-card__summary">Ringkasan dua baris. Baris kedua. Baris ketiga seharusnya terpotong dengan aman karena ini preview, bukan isi pokok.</p>
+  </article>
+  <div class="notice notice--warning">Contoh peringatan: data parsial.</div>
+  <div class="notice notice--error">Contoh error: pemuatan pilihan gagal.</div>
+  <div class="notice">Contoh kosong: belum ada observasi untuk digambar.</div>
+  <table class="data"><caption>Contoh tabel ekstrem</caption><thead><tr><th scope="col">Tahun</th><th scope="col">Nilai</th></tr></thead><tbody><tr><th scope="row">2005</th><td class="numeric">Tidak tersedia</td></tr></tbody></table>
+</Base>

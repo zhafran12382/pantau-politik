@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import ComparisonPanel from '../../components/comparison/ComparisonPanel.astro';
+import markers from '../../../content/context-markers.json';
+import indicators from '../../../content/indicators/indicators.json';
+import administrations from '../../../content/administrations/administrations.json';
+import observations from '../../../content/observations/observations.json';
+import { comparisonFor } from '../../lib/comparison/compute.mjs';
+interface Props { indicator: (typeof indicators)[number]; }
+export function getStaticPaths() { return indicators.map(indicator => ({ params: { slug: indicator.id }, props: { indicator } })); }
+const { indicator } = Astro.props;
+const comparison = comparisonFor(indicator, administrations, observations, 'admin-2004-2014', 'admin-2014-2024');
+---
+<Base title={`${indicator.label}: definisi dan konteks`} description={indicator.definition} canonicalPath={`/indikator/${indicator.id}/`}>
+  <nav class="breadcrumb" aria-label="Jejak halaman"><a href="/bandingkan/">← Pembanding</a></nav>
+  <header class="page-intro"><p class="eyebrow">Memahami indikator</p><h1>{indicator.label}</h1><p class="lead">{indicator.definition}</p><p class="meta">Satuan: {indicator.unit} · Rujukan: {indicator.reference_period}</p><p>{indicator.comparability_notes}</p>
+    <p class="notice">Dataset awal dalam pratinjau ini masih memerlukan audit editorial sebelum rilis publik.</p>
+    <div><a class="button" href={`/bandingkan/?a=admin-2004-2014&b=admin-2014-2024&indikator=${indicator.id}&mode=kalender`}>Jelajahi pada pembanding →</a></div>
+  </header>
+  <ComparisonPanel comparison={comparison} indicator={indicator} markers={markers} />
+</Base>

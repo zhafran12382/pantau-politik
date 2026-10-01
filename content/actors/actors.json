@@ -1,0 +1,7 @@
+[
+  {"id": "actor-dpr", "name": "DPR RI", "entity_type": "lembaga", "role": "Membahas dan mengesahkan UU APBN bersama pemerintah", "valid_from": "2004-10-01", "valid_to": null, "source_ids": ["src-dpr-apbn-2024"]},
+  {"id": "actor-kemenkeu", "name": "Kementerian Keuangan", "entity_type": "lembaga", "role": "Menyusun RAPBN dan melaksanakan subsidi", "valid_from": null, "valid_to": null, "source_ids": ["src-dpr-apbn-2024"]},
+  {"id": "actor-mk", "name": "Mahkamah Konstitusi", "entity_type": "lembaga", "role": "Memutus konstitusionalitas sistem pemilu", "valid_from": null, "valid_to": null, "source_ids": ["src-mk-putus-pemilu-2023"]},
+  {"id": "actor-kpu", "name": "KPU RI", "entity_type": "lembaga", "role": "Menyelenggarakan pemilu dan menetapkan hasil", "valid_from": null, "valid_to": null, "source_ids": ["src-kpu-pemilu-2024"]},
+  {"id": "actor-bps", "name": "Badan Pusat Statistik", "entity_type": "lembaga", "role": "Menghitung kemiskinan, TPT, Gini, PDB, dan inflasi", "valid_from": null, "valid_to": null, "source_ids": ["src-bps-kemiskinan"]}
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "admin-2004-2014",
+    "label": "Pemerintahan 2004–2014",
+    "start_date": "2004-10-20",
+    "end_date": "2014-10-20",
+    "source_ids": ["src-setneg-pelantikan-2004", "src-setneg-pelantikan-2014"]
+  },
+  {
+    "id": "admin-2014-2024",
+    "label": "Pemerintahan 2014–2024",
+    "start_date": "2014-10-20",
+    "end_date": "2024-10-20",
+    "source_ids": ["src-setneg-pelantikan-2014", "src-setneg-pelantikan-2024"]
+  }
+]

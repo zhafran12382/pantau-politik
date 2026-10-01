@@ -1,0 +1,92 @@
+[
+  {
+    "id": "ev-subsidi-1",
+    "issue_id": "isu-subsidi-energi-apbn",
+    "occurred_at": "2023-10-16",
+    "date_precision": "day",
+    "published_at_source": "2023-10-16",
+    "description": "DPR mengesahkan UU APBN 2024 yang memuat pagu subsidi energi.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-dpr-apbn-2024"]
+  },
+  {
+    "id": "ev-subsidi-2",
+    "issue_id": "isu-subsidi-energi-apbn",
+    "occurred_at": "2024-01-01",
+    "date_precision": "month",
+    "published_at_source": "2024-01-05",
+    "description": "Skema subsidi energi 2024 mulai dilaksanakan sesuai APBN.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-dpr-apbn-2024"]
+  },
+  {
+    "id": "ev-subsidi-3",
+    "issue_id": "isu-subsidi-energi-apbn",
+    "occurred_at": "2024-08-16",
+    "date_precision": "day",
+    "published_at_source": "2024-08-16",
+    "description": "Pemerintah menyampaikan nota keuangan dan evaluasi subsidi dalam pidato RAPBN berikutnya.",
+    "evidence_type": "pernyataan",
+    "source_ids": ["src-dpr-apbn-2024"]
+  },
+  {
+    "id": "ev-pemilu-1",
+    "issue_id": "isu-sistem-pemilu-dpr",
+    "occurred_at": "2023-06-15",
+    "date_precision": "day",
+    "published_at_source": "2023-06-15",
+    "description": "MK memutuskan sistem proporsional terbuka tetap berlaku.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-mk-putus-pemilu-2023"]
+  },
+  {
+    "id": "ev-pemilu-2",
+    "issue_id": "isu-sistem-pemilu-dpr",
+    "occurred_at": "2024-02-14",
+    "date_precision": "day",
+    "published_at_source": "2024-02-14",
+    "description": "Pemungutan suara pemilu legislatif dan presiden dilaksanakan.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-kpu-pemilu-2024"]
+  },
+  {
+    "id": "ev-pemilu-3",
+    "issue_id": "isu-sistem-pemilu-dpr",
+    "occurred_at": "2024-03-20",
+    "date_precision": "day",
+    "published_at_source": "2024-03-20",
+    "description": "KPU menetapkan hasil pemilu nasional 2024.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-kpu-pemilu-2024"]
+  },
+  {
+    "id": "ev-miskin-1",
+    "issue_id": "isu-angka-kemiskinan-bps",
+    "occurred_at": "2024-01-15",
+    "date_precision": "month",
+    "published_at_source": "2024-01-15",
+    "description": "BPS merilis angka kemiskinan September 2023 sebagai pembanding deret berkala.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-bps-kemiskinan"]
+  },
+  {
+    "id": "ev-miskin-2",
+    "issue_id": "isu-angka-kemiskinan-bps",
+    "occurred_at": "2024-07-01",
+    "date_precision": "month",
+    "published_at_source": "2024-07-01",
+    "description": "BPS merilis angka kemiskinan Maret 2024 yang dipakai seri konsisten pembanding.",
+    "evidence_type": "fakta",
+    "source_ids": ["src-bps-kemiskinan"]
+  },
+  {
+    "id": "ev-miskin-3",
+    "issue_id": "isu-angka-kemiskinan-bps",
+    "occurred_at": "2025-07-25",
+    "date_precision": "day",
+    "published_at_source": "2025-07-25",
+    "description": "BPS mempublikasikan penjelasan tren kemiskinan dan Gini dengan periode survei yang terdokumentasi.",
+    "evidence_type": "analisis",
+    "source_ids": ["src-bps-kemiskinan"]
+  }
+]

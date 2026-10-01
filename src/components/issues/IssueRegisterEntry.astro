@@ -1,0 +1,37 @@
+---
+import StatusChip from '../shared/StatusChip.astro';
+import Freshness from '../shared/Freshness.astro';
+import { formatID } from '../../lib/statistics/stats.mjs';
+interface Figure { indicator: { id: string; label: string; unit: string; display_precision: number }; firstYear: string; lastYear: string; lastValue: number; rangeLabel: string; path: string; source: string; }
+interface Props {
+  issue: any;
+  code: string;
+  figure?: Figure | null;
+  sourceCount: number;
+  featured?: boolean;
+}
+const { issue, code, figure = null, sourceCount, featured = false } = Astro.props;
+---
+<article class={`issue-card clipping${featured ? ' issue-card--featured' : ''}`} data-category={issue.category} data-search={`${code} ${issue.title} ${issue.card_summary} ${issue.category}`.toLowerCase()}>
+  <div class="issue-card__top clipping__filehead">
+    <span class="register-id file-code">Berkas {code}</span>
+    <span class="issue-card__category">{issue.category}</span>
+    <StatusChip status={issue.status} />
+  </div>
+  <h3><a class="issue-title-link" href={`/isu/${issue.slug}/`}>{issue.title}</a></h3>
+  <p class="issue-card__summary">{issue.card_summary}</p>
+  {figure
+    ? <div class="issue-card__figure">
+        <svg class="issue-card__spark" viewBox="0 0 120 40" role="img" aria-label={`Tren ${figure.indicator.label} ${figure.firstYear}–${figure.lastYear}, rentang ${figure.rangeLabel}`}>
+          <polyline points={figure.path} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <title>{figure.indicator.label}, {figure.firstYear}–{figure.lastYear}, rentang {figure.rangeLabel}</title>
+        </svg>
+        <p class="issue-card__value">{formatID(figure.lastValue, figure.indicator.display_precision)}{figure.indicator.unit === '%' ? ' %' : ''}<small>Indikator konteks: {figure.indicator.label}, {figure.firstYear}–{figure.lastYear} · rentang {figure.rangeLabel} · {figure.source}</small></p>
+      </div>
+    : <p class="meta">Belum ada indikator konteks untuk isu ini.</p>}
+  <div class="clipping__foot">
+    <span class="chip chip--count">{sourceCount} sumber</span>
+    <Freshness date={issue.last_checked_at} />
+    <a class="text-link issue-card__cta" href={`/isu/${issue.slug}/`}>Lihat bukti &amp; sumber <span aria-hidden="true">→</span></a>
+  </div>
+</article>

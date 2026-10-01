@@ -1,0 +1,32 @@
+---
+import indicators from '../../../content/indicators/indicators.json';
+import administrations from '../../../content/administrations/administrations.json';
+import { DEFAULT_COMPARISON } from '../../lib/comparison/url.mjs';
+const labels: Record<string, string> = { 'pdb-growth': 'Pertumbuhan PDB riil', kemiskinan: 'Kemiskinan', tpt: 'Pengangguran terbuka', gini: 'Gini pengeluaran', inflasi: 'Inflasi IHK' };
+---
+<div class="compare-sticky">
+<form class="compare-controls" id="compareForm">
+  <fieldset id="compareFields" disabled>
+    <legend class="sr-only">Pilih indikator dan dua periode pemerintahan</legend>
+    <div class="control-grid">
+      <div class="control-indicator"><label for="selInd">Indikator</label><select id="selInd" name="indikator">{indicators.map(item => <option value={item.id} selected={item.id === DEFAULT_COMPARISON.indikator}>{labels[item.id] || item.label}</option>)}</select></div>
+      <div><label for="selA">Periode A</label><select id="selA" name="a" aria-describedby="compareNotice">{administrations.map(item => <option value={item.id} selected={item.id === DEFAULT_COMPARISON.a}>{item.label}</option>)}</select></div>
+      <div class="swap-cell"><button class="button--secondary swap-btn" type="button" id="swapPeriods" title="Tukar periode A dan B" aria-label="Tukar periode A dan B"><span aria-hidden="true">⇄</span></button></div>
+      <div><label for="selB">Periode B</label><select id="selB" name="b" aria-describedby="compareNotice">{administrations.map(item => <option value={item.id} selected={item.id === DEFAULT_COMPARISON.b}>{item.label}</option>)}</select></div>
+    </div>
+    <fieldset class="time-mode"><legend>Sumbu waktu</legend><div class="segments">
+      <label><input type="radio" name="mode" value="kalender" checked />Kalender</label>
+      <label><input type="radio" name="mode" value="setara" />Rentang setara</label>
+    </div>
+    <details class="mode-help"><summary>Apa bedanya Kalender vs Rentang setara?</summary>
+      <p><strong>Kalender</strong> menaruh angka pada tahun sebenarnya: 2005…2013 lawan 2015…2023, dengan jeda tahun transisi di antaranya.</p>
+      <p><strong>Rentang setara</strong> mensejajarkan tahun penuh ke-1 sampai ke-9 kedua periode. Bukan tahun tepat sejak pelantikan; tahun asal tetap tercantum di tabel.</p>
+    </details></fieldset>
+    <details class="range-help"><summary>Tahun yang dipakai dalam hitungan</summary>
+      <p>Yang masuk statistik hanya tahun kalender penuh: 2005–2013 dan 2015–2023 (9 dari 9 tahun tersedia bila lengkap). Tahun pergantian 2004, 2014, dan 2024 dikecualikan karena tidak penuh dalam satu masa jabatan. Awal–akhir angka mengacu pada batas rentang data, bukan saat pelantikan.</p>
+    </details>
+  </fieldset>
+  <p class="meta" id="noJsNote">Tabel menampilkan pilihan bawaan. Aktifkan JavaScript untuk mengganti pilihan.</p>
+  <a class="jump-link" href="#hasil">↓ Lihat hasil</a>
+</form>
+</div>

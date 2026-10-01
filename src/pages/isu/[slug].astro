@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import SourceLinks from '../../components/shared/SourceLinks.astro';
+import StatusChip from '../../components/shared/StatusChip.astro';
+import Freshness from '../../components/shared/Freshness.astro';
+import ShareActions from '../../components/shared/ShareActions.astro';
+import SourceRecord from '../../components/shared/SourceRecord.astro';
+import registerMap from '../../../content/register-map.json';
+import issues from '../../../content/issues/issues.json';
+import events from '../../../content/events/events.json';
+import sources from '../../../content/sources/sources.json';
+import actors from '../../../content/actors/actors.json';
+import indicators from '../../../content/indicators/indicators.json';
+import corrections from '../../../content/corrections/corrections.json';
+import { formatTanggalID, isStale, todayJakartaISO } from '../../lib/dates/dates.mjs';
+interface Props { issue: (typeof issues)[number]; }
+export function getStaticPaths() {
+  return issues.filter(issue => issue.publication_status === 'published').map(issue => ({ params: { slug: issue.slug }, props: { issue } }));
+}
+const { issue } = Astro.props;
+const timeline = events.filter(event => event.issue_id === issue.id).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
+const involved = actors.filter(actor => actor.source_ids.some(id => issue.source_ids.includes(id)));
+const related = indicators.filter(indicator => issue.related_indicator_ids.includes(indicator.id));
+const changes = corrections.filter(correction => correction.affected_ids.includes(issue.id));
+const sourceIds = [...new Set([...issue.source_ids, ...issue.impact.flatMap(impact => impact.source_ids), ...timeline.flatMap(event => event.source_ids), ...involved.flatMap(actor => actor.source_ids)])];
+const sourceList = sourceIds.map(id => sources.find(source => source.id === id)).filter(source => source !== undefined);
+const stale = isStale(issue.last_checked_at, todayJakartaISO());
+const registerCode: string = (registerMap as unknown as Record<string, string>)[issue.id] || 'PP-???';
+function eventDate(event: (typeof events)[number]) {
+  const text = formatTanggalID(event.occurred_at);
+  return event.date_precision === 'month' ? text.replace(/^\d+ /, '') : event.date_precision === 'year' ? event.occurred_at.slice(0, 4) : text;
+}
+function machineDate(event: (typeof events)[number]) {
+  return event.date_precision === 'month' ? event.occurred_at.slice(0, 7) : event.date_precision === 'year' ? event.occurred_at.slice(0, 4) : event.occurred_at;
+}
+---
+<Base title={issue.title} description={issue.card_summary} canonicalPath={`/isu/${issue.slug}/`}>
+  <article class="article">
+    <nav class="breadcrumb" aria-label="Jejak halaman"><a href="/">← Kembali ke Pantau</a></nav>
+    <header class="article-header">
+      <div class="status-line"><span class="register-id">{registerCode}</span><span class="meta">{issue.category}</span></div>
+      <h1>{issue.title}</h1>
+      <div><p class="lead">{issue.summary}</p><SourceLinks ids={issue.source_ids} /></div>
+      <div class="article-meta">
+        <div class="status-line"><StatusChip status={issue.status} /><span class="meta">Tahap kebijakan: {issue.policy_stage}</span></div>
+        <Freshness date={issue.last_checked_at} />
+        <dl class="meta"><div><dt>Diterbitkan</dt><dd><time datetime={issue.published_at}>{formatTanggalID(issue.published_at)}</time></dd></div>
+          <div><dt>Diperbarui</dt><dd><time datetime={issue.updated_at}>{formatTanggalID(issue.updated_at)}</time></dd></div></dl>
+        <p class="meta">Diterbitkan dan diperbarui adalah tanggal naskah; diperiksa adalah tanggal pemeriksaan sumber terakhir. Identitas penulis dan pemeriksa belum dikonfirmasi untuk rilis publik.</p>
+      </div>
+      {stale && <p class="notice notice--warning">Belum diperiksa ulang sejak {formatTanggalID(issue.last_checked_at)}. Buka sumber untuk memeriksa perkembangan terbaru.</p>}
+      {changes.length > 0 && <p class="notice">Ada catatan koreksi pada penjelasan ini. <a href="#koreksi">Baca riwayat perubahannya.</a></p>}
+      <nav class="toc" aria-label="Di halaman ini"><p>Di halaman ini</p><ol>
+        <li><a href="#dampak">Dampak</a></li><li><a href="#bukti">Klaim dan bukti</a></li><li><a href="#kronologi">Kronologi</a></li>
+        {involved.length > 0 && <li><a href="#pihak">Pihak terkait</a></li>}
+        {related.length > 0 && <li><a href="#data-terkait">Data terkait</a></li>}
+        <li><a href="#sumber">Sumber</a></li><li><a href="#koreksi">Koreksi</a></li>
+      </ol></nav>
+    </header>
+
+    <section class="article-section" aria-labelledby="dampak"><h2 id="dampak">Dampak yang perlu dipahami</h2>
+      <div class="impact-list">{issue.impact.map(impact => <div>
+        <h3>{impact.group}{impact.is_projection && <span class="projection">Proyeksi</span>}</h3>
+        <p>{impact.text}</p><SourceLinks ids={impact.source_ids} />
+      </div>)}</div>
+    </section>
+
+    <section class="article-section" aria-labelledby="bukti"><h2 id="bukti">Klaim dan bukti</h2>
+      <div class="evidence-grid">{(issue.impact as any[]).map((imp: any) => <article class="evidence-card">
+        <p class="evidence-claim">{imp.text}</p>
+        <div class="status-line"><span class={`chip ${imp.is_projection ? 'chip--wait' : 'chip--done'}`}>{imp.is_projection ? 'Proyeksi' : 'Dampak berjalan'}</span><span class="meta">{imp.group}</span></div>
+        <SourceLinks ids={imp.source_ids} />
+      </article>)}</div>
+    </section>
+
+    <section class="article-section" aria-labelledby="kronologi"><h2 id="kronologi">Kronologi</h2>
+      <ol class="timeline">{timeline.map((event, index) => <li>
+        <time datetime={machineDate(event)}>{eventDate(event)}</time>
+        <div class="timeline__body"><p>{event.description}</p><SourceLinks ids={event.source_ids} />
+          <details class="timeline__detail" open={index === 0}>
+            <summary>Detail peristiwa</summary>
+            <p>Jenis bukti: {event.evidence_type}. Tanggal kejadian: {eventDate(event)}. Publikasi sumber: {formatTanggalID(event.published_at_source)}.</p>
+          </details>
+        </div>
+      </li>)}</ol>
+    </section>
+
+    {involved.length > 0 && <section class="article-section" aria-labelledby="pihak"><h2 id="pihak">Pihak terkait</h2>
+      <div class="actor-list">{involved.map(actor => <div><h3>{actor.name}</h3><p>{actor.role}.</p><SourceLinks ids={actor.source_ids} /></div>)}</div>
+    </section>}
+
+    {related.length > 0 && <section class="article-section" aria-labelledby="data-terkait"><h2 id="data-terkait">Baca data terkait</h2>
+      <p>{issue.related_indicator_note}</p>
+      <ul class="source-list">{related.map(indicator => <li><a href={`/bandingkan/?a=admin-2004-2014&b=admin-2014-2024&indikator=${indicator.id}&mode=kalender`}>{indicator.label} <span aria-hidden="true">→</span></a></li>)}</ul>
+    </section>}
+
+    {related.length > 0 && <section class="article-section" aria-labelledby="istilah"><h2 id="istilah">Istilah dalam data</h2>
+      {related.map(indicator => <details class="glossary"><summary>Jelaskan {indicator.label}</summary><div class="glossary__body">
+        <p>{indicator.definition}</p><a class="text-link" href={`/indikator/${indicator.id}/`}>Definisi dan sumber lengkap →</a>
+        <button class="button--text" data-glossary-close type="button" hidden>Tutup penjelasan</button>
+      </div></details>)}
+    </section>}
+
+    <section class="article-section" aria-labelledby="sumber"><h2 id="sumber">Sumber rujukan</h2>
+      <ol class="source-list source-cards">{sourceList.map(source => <SourceRecord source={source} />)}</ol>
+    </section>
+    <section class="article-section" aria-labelledby="koreksi"><h2 id="koreksi">Riwayat koreksi</h2>
+      {changes.length ? <ol class="correction-list">{changes.map(change => <li><time class="meta" datetime={change.corrected_at}>{formatTanggalID(change.corrected_at)}</time><p>{change.change_summary}</p><p class="meta">Alasan: {change.reason}.</p><SourceLinks ids={change.source_ids} /></li>)}</ol> : <p>Belum ada koreksi yang diterbitkan.</p>}
+      <a class="text-link" href="/koreksi/">Tentang proses koreksi →</a>
+    </section>
+    <section class="article-section" aria-labelledby="bagikan"><h2 id="bagikan">Bagikan penjelasan</h2><ShareActions id="issue-share-url" label="Bagikan halaman ini" /></section>
+  </article>
+</Base>

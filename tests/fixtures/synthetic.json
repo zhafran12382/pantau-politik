@@ -1,0 +1,5 @@
+{
+  "_note": "Fixture sintetis pengujian. BUKAN data pemerintahan. Jangan dipublikasikan.",
+  "poverty_example": {"first": 10, "last": 8, "expected_diff_pp": -2},
+  "gini_example": {"first": 0.4, "last": 0.38, "expected_diff_index": -0.02}
+}

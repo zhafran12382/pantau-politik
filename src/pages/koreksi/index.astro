@@ -1,0 +1,15 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import SourceLinks from '../../components/shared/SourceLinks.astro';
+import corrections from '../../../content/corrections/corrections.json';
+import issues from '../../../content/issues/issues.json';
+import { formatTanggalID } from '../../lib/dates/dates.mjs';
+const changes = corrections.filter(change => change.affected_ids.some(id => issues.some(issue => issue.id === id && issue.publication_status === 'published')));
+---
+<Prose title="Koreksi dan perubahan" description="Perubahan substantif dicatat agar pembaca dapat memahami apa yang diperbaiki dan alasannya." path="/koreksi/">
+  <p class="notice">Kontak koreksi belum ditetapkan. Pratinjau ini belum menerima laporan; alamat yang benar-benar dipantau harus tersedia sebelum rilis publik.</p>
+  <section><h2>Riwayat dalam konten pratinjau</h2>
+    {changes.length ? <ol class="correction-list">{changes.map(change => <li><time class="meta" datetime={change.corrected_at}>{formatTanggalID(change.corrected_at)}</time><p>{change.change_summary}</p><p class="meta">Alasan: {change.reason}. Versi sebelumnya: {change.previous_version}.</p>
+      {change.affected_ids.map(id => { const issue = issues.find(item => item.id === id && item.publication_status === 'published'); return issue && <a class="text-link" href={`/isu/${issue.slug}/#koreksi`}>{issue.title} →</a>; })}<SourceLinks ids={change.source_ids} /></li>)}</ol> : <p>Belum ada koreksi yang diterbitkan.</p>}
+  </section>
+</Prose>

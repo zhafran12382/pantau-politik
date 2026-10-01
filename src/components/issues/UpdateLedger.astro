@@ -1,0 +1,18 @@
+---
+import { formatTanggalID, relativeID, todayJakartaISO } from '../../lib/dates/dates.mjs';
+interface UpdateItem { kind: string; date: string; title: string; href: string; detail: string; }
+interface Props { items: UpdateItem[]; }
+const { items } = Astro.props;
+const today = todayJakartaISO();
+---
+{items.length > 0 && <section class="section-block" aria-labelledby="pembaruan">
+  <div class="section-heading"><div><p class="eyebrow">Kawat ruang redaksi</p><h2 id="pembaruan">Buku perubahan</h2></div><p class="meta">Apa yang berubah, bukan sekadar kapan</p></div>
+  <ol class="update-timeline">
+    {items.slice(0, 5).map((item, i) => <li>
+      <span class="case-no">Perkara {String(i + 1).padStart(2, '0')}</span>
+      <div><time class="numeric" datetime={item.date} title={formatTanggalID(item.date)}>{relativeID(item.date, today) || formatTanggalID(item.date)}</time>
+      <p><span class={`wire-kind${item.kind === 'Koreksi' ? ' wire-kind--koreksi' : ' wire-kind--penjelasan'}`}>{item.kind}</span> <a href={item.href}>{item.title}</a></p>
+      <p class="meta">{item.detail}</p></div>
+    </li>)}
+  </ol>
+</section>}

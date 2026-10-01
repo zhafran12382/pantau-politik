@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-candidate/
+.astro/
+.history/
+.reports/
+.env
+.env.*
+!.env.example

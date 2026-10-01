@@ -1,0 +1,30 @@
+---
+import { formatID } from '../../lib/statistics/stats.mjs';
+import { chartSVG } from '../../lib/comparison/compute.mjs';
+import type { comparisonFor } from '../../lib/comparison/compute.mjs';
+import indicators from '../../../content/indicators/indicators.json';
+interface Props { comparison: ReturnType<typeof comparisonFor>; indicator: (typeof indicators)[number]; }
+const { comparison, indicator } = Astro.props;
+const chart = chartSVG({
+  yearsA: comparison.yearsA, sumA: comparison.sumA, yearsB: comparison.yearsB, sumB: comparison.sumB,
+  unit: indicator.unit, idA: comparison.admA.label, idB: comparison.admB.label,
+  mode: 'kalender', precision: indicator.display_precision, chartId: 'preview', width: 360,
+  gapYears: [2014], markers: [], footer: '',
+});
+const href = `/bandingkan/?a=${comparison.admA.id}&b=${comparison.admB.id}&indikator=${indicator.id}&mode=kalender`;
+---
+<figure class="preview-chart exhibit">
+  <div class="exhibit__filehead"><span class="file-code">Exhibit PDB · Pratinjau pembanding</span></div>
+  <figcaption class="meta">{indicator.label} · {comparison.sumA.stat?.kind === 'mean' ? 'rata-rata tahunan' : 'perubahan awal–akhir'}</figcaption>
+  <div class="preview-numbers">
+    {[comparison.sumA, comparison.sumB].map((sum, i) => {
+      const years = i === 0 ? comparison.yearsA : comparison.yearsB;
+      const raw = sum.stat?.kind === 'mean' ? sum.stat.mean : sum.stat?.diff ?? null;
+      const unitWord = sum.stat?.kind === 'mean' ? (indicator.unit === '%' ? '%' : indicator.unit) : (indicator.id === 'gini' ? 'poin indeks' : 'poin persentase');
+      return <p><strong class="display-number numeric">{formatID(raw, 1)} {unitWord}</strong><small>{years[0]}–{years.at(-1)}</small></p>;
+    })}
+  </div>
+  <span set:html={chart} />
+  <figcaption class="meta">Sumber: BPS. Angka kondisi, bukan bukti sebab-akibat.</figcaption>
+</figure>
+<p><a class="button" href={href}>Buka pembanding <span aria-hidden="true">→</span></a></p>

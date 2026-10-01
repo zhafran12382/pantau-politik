@@ -1,0 +1,13 @@
+import { writeFile, readFile } from 'node:fs/promises';
+import path from 'node:path';
+const site = (process.env.PUBLIC_SITE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
+const dist = path.resolve(process.env.DIST_DIR || 'dist');
+const issues = JSON.parse(await readFile(new URL('../content/issues/issues.json', import.meta.url), 'utf8')).filter(issue => issue.publication_status === 'published');
+const indicators = JSON.parse(await readFile(new URL('../content/indicators/indicators.json', import.meta.url), 'utf8'));
+const routes = ['/', '/bandingkan/', '/metode/', '/koreksi/', '/tentang/', '/editorial/', '/privasi/'].map(route => ({ route }));
+for (const issue of issues) routes.push({ route: `/isu/${issue.slug}/`, updated: issue.updated_at });
+for (const indicator of indicators) routes.push({ route: `/indikator/${indicator.id}/` });
+const escape = text => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map(({ route, updated }) => `<url><loc>${escape(site + route)}</loc>${updated ? `<lastmod>${escape(updated)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
+await writeFile(path.join(dist, 'sitemap.xml'), xml);
+console.log(`Sitemap: ${routes.length} routes, editorial lastmod only.`);

@@ -1,0 +1,12 @@
+---
+const DEFINITIONS: Record<string, { cls: string; meaning: string }> = {
+  'sedang berkembang': { cls: 'chip--dev', meaning: 'Status proses informasi/kebijakan: masih berubah dan diperiksa berkala. Bukan opini situs.' },
+  'menunggu keputusan': { cls: 'chip--wait', meaning: 'Status proses: menunggu keputusan lembaga yang berwenang. Bukan opini situs.' },
+  'diterapkan': { cls: 'chip--done', meaning: 'Status proses: kebijakan atau metode sudah berjalan. Bukan penilaian berhasil.' },
+  'diarsipkan': { cls: 'chip--arch', meaning: 'Status arsip: tidak lagi diperbarui, URL tetap tersedia.' },
+};
+interface Props { status: string }
+const { status } = Astro.props;
+const def = DEFINITIONS[status] || { cls: 'chip--arch', meaning: 'Status proses informasi, bukan opini situs.' };
+---
+<span class={`chip ${def.cls}`} title={def.meaning}>{status}</span>

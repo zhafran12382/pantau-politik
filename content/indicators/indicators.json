@@ -1,0 +1,72 @@
+[
+  {
+    "id": "pdb-growth",
+    "label": "Pertumbuhan PDB riil",
+    "definition": "Laju pertumbuhan tahunan Produk Domestik Bruto atas dasar harga konstan, dalam persen.",
+    "unit": "%",
+    "frequency": "annual",
+    "reference_period": "tahun kalender Januari–Desember",
+    "method_version": "bps-pdb-2010-base",
+    "comparability_notes": "Gunakan satu seri konsisten berbasis tahun dasar 2010 untuk 2005–2023. Jangan mencampur tahun dasar berbeda tanpa penyambungan resmi BPS.",
+    "source_ids": ["src-bps-pdb", "src-wb-wdi"],
+    "audit_status": "approved",
+    "display_precision": 1,
+    "stat_kind": "mean"
+  },
+  {
+    "id": "kemiskinan",
+    "label": "Kemiskinan",
+    "definition": "Persentase penduduk miskin nasional menurut garis kemiskinan BPS, periode survei Maret.",
+    "unit": "%",
+    "frequency": "annual-march",
+    "reference_period": "Maret",
+    "method_version": "bps-poverty-march",
+    "comparability_notes": "Seri Maret yang konsisten. Jangan mencampur garis kemiskinan BPS dengan batas internasional Bank Dunia.",
+    "source_ids": ["src-bps-kemiskinan"],
+    "audit_status": "approved",
+    "display_precision": 2,
+    "stat_kind": "endpoint-diff-pp"
+  },
+  {
+    "id": "tpt",
+    "label": "Pengangguran terbuka (TPT)",
+    "definition": "Tingkat Pengangguran Terbuka nasional, Survei Angkatan Kerja Nasional periode Agustus.",
+    "unit": "%",
+    "frequency": "annual-august",
+    "reference_period": "Agustus",
+    "method_version": "bps-sakernas-august",
+    "comparability_notes": "Hanya periode Agustus. TPT bukan ukuran tunggal kualitas pekerjaan.",
+    "source_ids": ["src-bps-tpt"],
+    "audit_status": "approved",
+    "display_precision": 2,
+    "stat_kind": "endpoint-diff-pp"
+  },
+  {
+    "id": "gini",
+    "label": "Ketimpangan (Gini pengeluaran)",
+    "definition": "Rasio Gini pengeluaran penduduk nasional BPS, skala 0–1, periode September agar konsisten historis.",
+    "unit": "indeks 0–1",
+    "frequency": "annual-september",
+    "reference_period": "September",
+    "method_version": "bps-gini-september",
+    "comparability_notes": "Gini pengeluaran, bukan Gini pendapatan. Gunakan periode survei yang sama.",
+    "source_ids": ["src-bps-gini"],
+    "audit_status": "approved",
+    "display_precision": 3,
+    "stat_kind": "endpoint-diff-index"
+  },
+  {
+    "id": "inflasi",
+    "label": "Inflasi IHK",
+    "definition": "Inflasi Indeks Harga Konsumen Desember terhadap Desember tahun sebelumnya (year-on-year Desember), dalam persen.",
+    "unit": "%",
+    "frequency": "annual-december",
+    "reference_period": "Desember y-on-y",
+    "method_version": "bps-ihk-dec-dec",
+    "comparability_notes": "Jangan campur dengan rata-rata tahunan IHK. Periksa revisi cakupan/tahun dasar.",
+    "source_ids": ["src-bps-inflasi"],
+    "audit_status": "approved",
+    "display_precision": 2,
+    "stat_kind": "mean"
+  }
+]

@@ -1,0 +1,11 @@
+---
+import Base from './Base.astro';
+interface Props { title: string; description: string; path: string; }
+const { title, description, path } = Astro.props;
+---
+<Base title={title} description={description} canonicalPath={path}>
+  <article class="prose">
+    <header class="page-intro"><p class="eyebrow">Tentang cara kerja kami</p><h1>{title}</h1><p class="lead">{description}</p></header>
+    <slot />
+  </article>
+</Base>

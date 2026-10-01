@@ -1,0 +1,107 @@
+[
+  {
+    "id": "isu-subsidi-energi-apbn",
+    "slug": "subsidi-energi-apbn",
+    "title": "Bagaimana subsidi energi diputuskan dalam APBN?",
+    "card_summary": "Siapa menetapkan subsidi BBM dan listrik, bagaimana APBN mencatatnya, dan apa dampaknya bagi rumah tangga dan fiskal.",
+    "summary": "Subsidi energi ditetapkan melalui pembahasan pemerintah dan DPR dalam UU APBN setiap tahun. Besaran subsidi BBM, LPG, dan listrik memengaruhi harga eceran, beban fiskal, dan ruang belanja lain. Status terakhir: skema subsidi 2024 berjalan; evaluasi skema 2025 menunggu keputusan fiskal. Halaman ini menjelaskan kewenangan, alur penetapan, dan bukti yang tersedia.",
+    "impact": [
+      {
+        "group": "Rumah tangga",
+        "text": "Perubahan subsidi memengaruhi harga BBM, LPG 3 kg, dan tarif listrik bersubsidi.",
+        "is_projection": false,
+        "source_ids": ["src-dpr-apbn-2024"]
+      },
+      {
+        "group": "APBN",
+        "text": "Subsidi tercatat sebagai belanja; kenaikan harga minyak global berpotensi menambah beban tanpa penyesuaian kebijakan.",
+        "is_projection": true,
+        "source_ids": ["src-dpr-apbn-2024"]
+      }
+    ],
+    "category": "APBN dan energi",
+    "status": "sedang berkembang",
+    "policy_stage": "pelaksanaan dan evaluasi tahunan",
+    "priority": 1,
+    "related_indicator_ids": ["inflasi", "pdb-growth"],
+    "related_indicator_note": "Inflasi dan pertumbuhan berkaitan secara waktu dengan harga energi, tetapi bukan bukti bahwa perubahan subsidi disebabkan atau menyebabkan perubahan indikator tersebut.",
+    "source_ids": ["src-dpr-apbn-2024", "src-bps-inflasi"],
+    "author": "Redaksi",
+    "reviewer": "Editor",
+    "published_at": "2026-09-20",
+    "updated_at": "2026-09-25",
+    "last_checked_at": "2026-09-25",
+    "publication_status": "published",
+    "approved_version": "v1-2026-09-25"
+  },
+  {
+    "id": "isu-sistem-pemilu-dpr",
+    "slug": "sistem-pemilu-dpr",
+    "title": "Bagaimana sistem pemilu DPR ditentukan dan apa dampaknya?",
+    "card_summary": "MK memutuskan proporsional terbuka tetap dipakai; DPR dan KPU menindaklanjuti aturan teknis dan daerah pemilihan.",
+    "summary": "Mahkamah Konstitusi memutuskan sistem proporsional terbuka tetap berlaku untuk pemilu legislatif. Putusan itu mengikat pembuat undang-undang dan penyelenggara. DPR membahas tindak lanjut legislasi bila diperlukan, KPU mengatur teknis pencalonan dan penghitungan. Status terakhir: putusan berlaku; pelaksanaan 2024 selesai; evaluasi regulasi menunggu keputusan DPR dan pemerintah.",
+    "impact": [
+      {
+        "group": "Pemilih",
+        "text": "Pemilih mencoblos nama calon, bukan hanya partai, sehingga persaingan antarcalon separtai tetap terbuka.",
+        "is_projection": false,
+        "source_ids": ["src-mk-putus-pemilu-2023", "src-kpu-pemilu-2024"]
+      },
+      {
+        "group": "Partai dan calon",
+        "text": "Strategi pencalonan dan kampanye menyesuaikan aturan suara terbanyak dalam satu daerah pemilihan.",
+        "is_projection": false,
+        "source_ids": ["src-mk-putus-pemilu-2023"]
+      }
+    ],
+    "category": "Pemilu dan lembaga",
+    "status": "menunggu keputusan",
+    "policy_stage": "evaluasi regulasi pascapemilu",
+    "priority": 2,
+    "related_indicator_ids": [],
+    "related_indicator_note": "",
+    "source_ids": ["src-mk-putus-pemilu-2023", "src-kpu-pemilu-2024"],
+    "author": "Redaksi",
+    "reviewer": "Editor",
+    "published_at": "2026-09-18",
+    "updated_at": "2026-09-24",
+    "last_checked_at": "2026-09-24",
+    "publication_status": "published",
+    "approved_version": "v1-2026-09-24"
+  },
+  {
+    "id": "isu-angka-kemiskinan-bps",
+    "slug": "angka-kemiskinan-bps",
+    "title": "Bagaimana angka kemiskinan BPS dihitung dan dipakai?",
+    "card_summary": "BPS memakai garis kemiskinan dan survei berkala; angka Maret dipakai konsisten agar dapat dibandingkan antarperiode.",
+    "summary": "BPS menetapkan status miskin berdasarkan garis kemiskinan yang dihitung dari kebutuhan makanan dan nonmakanan, diukur melalui Survei Sosial Ekonomi Nasional. Angka Maret dipakai dalam pembanding agar konsisten antarperiode. Data dipakai untuk perencanaan perlindungan sosial, tetapi tidak berdiri sendiri sebagai bukti keberhasilan program tertentu. Status terakhir: metode berjalan; publikasi berkala berikutnya mengikuti jadwal BPS.",
+    "impact": [
+      {
+        "group": "Kebijakan sosial",
+        "text": "Data menjadi rujukan sasaran bantuan dan evaluasi, bersama data terpadu serta anggaran pelaksana.",
+        "is_projection": false,
+        "source_ids": ["src-bps-kemiskinan"]
+      },
+      {
+        "group": "Pembaca data",
+        "text": "Perbandingan antarperiode mensyaratkan bulan survei dan garis yang sama; pencampuran sumber menghasilkan kesimpulan keliru.",
+        "is_projection": false,
+        "source_ids": ["src-bps-kemiskinan"]
+      }
+    ],
+    "category": "Data dan kebijakan",
+    "status": "diterapkan",
+    "policy_stage": "pengukuran berkala berjalan",
+    "priority": 3,
+    "related_indicator_ids": ["kemiskinan", "gini", "tpt"],
+    "related_indicator_note": "Halaman ini menjelaskan metode di balik indikator kemiskinan, Gini, dan ketenagakerjaan yang ditampilkan pada pembanding.",
+    "source_ids": ["src-bps-kemiskinan", "src-bps-gini", "src-bps-tpt"],
+    "author": "Redaksi",
+    "reviewer": "Editor",
+    "published_at": "2026-09-15",
+    "updated_at": "2026-09-23",
+    "last_checked_at": "2026-09-23",
+    "publication_status": "published",
+    "approved_version": "v1-2026-09-23"
+  }
+]

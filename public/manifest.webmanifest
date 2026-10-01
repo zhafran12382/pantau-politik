@@ -1,0 +1,14 @@
+{
+  "name": "Pantau Politik",
+  "short_name": "Pantau",
+  "description": "Penjelasan isu politik Indonesia, kronologi bersumber, dan pembanding indikator nasional.",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fafaf7",
+  "theme_color": "#fafaf7",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

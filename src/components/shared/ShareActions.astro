@@ -1,0 +1,17 @@
+---
+interface Props { label?: string; id: string; }
+const { label = 'Bagikan halaman', id } = Astro.props;
+---
+<div class="actions" data-share-widget>
+  <button type="button" class="button--secondary" data-share-button hidden>{label}</button>
+  <span class="meta" data-share-status role="status" aria-live="polite"></span>
+  <div class="share-fallback" data-share-fallback hidden>
+    <label for={id}>Salin alamat halaman</label>
+    <input id={id} data-share-url type="url" readonly />
+  </div>
+  <noscript><p class="meta">Salin alamat halaman dari browser untuk membagikannya.</p></noscript>
+</div>
+<script>
+  import { initUI } from '../../client/ui.mjs';
+  initUI(document, window);
+</script>

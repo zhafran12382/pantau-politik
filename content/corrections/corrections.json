@@ -1,0 +1,11 @@
+[
+  {
+    "id": "corr-2026-09-24-01",
+    "affected_ids": ["isu-sistem-pemilu-dpr"],
+    "previous_version": "v1-2026-09-20",
+    "corrected_at": "2026-09-24",
+    "change_summary": "Memperbaiki tanggal putusan MK dan menambahkan locator amar putusan.",
+    "reason": "Ketepatan sitasi",
+    "source_ids": ["src-mk-putus-pemilu-2023"]
+  }
+]

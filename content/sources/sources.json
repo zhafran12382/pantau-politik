@@ -1,0 +1,145 @@
+[
+  {
+    "id": "src-setneg-pelantikan-2004",
+    "title": "Pelantikan Presiden dan Wakil Presiden 2004",
+    "publisher": "Sekretariat Negara RI",
+    "url": "https://www.setneg.go.id/",
+    "published_at": "2004-10-20",
+    "accessed_at": "2026-09-26",
+    "locator": "arsip pelantikan 20 Oktober 2004",
+    "source_type": "official",
+    "rights_note": "tautan referensi"
+  },
+  {
+    "id": "src-setneg-pelantikan-2014",
+    "title": "Pelantikan Presiden dan Wakil Presiden 2014",
+    "publisher": "Sekretariat Negara RI",
+    "url": "https://www.setneg.go.id/",
+    "published_at": "2014-10-20",
+    "accessed_at": "2026-09-26",
+    "locator": "arsip pelantikan 20 Oktober 2014",
+    "source_type": "official",
+    "rights_note": "tautan referensi"
+  },
+  {
+    "id": "src-setneg-pelantikan-2024",
+    "title": "Pelantikan Presiden dan Wakil Presiden 2024",
+    "publisher": "Sekretariat Negara RI",
+    "url": "https://www.setneg.go.id/",
+    "published_at": "2024-10-20",
+    "accessed_at": "2026-09-26",
+    "locator": "arsip pelantikan 20 Oktober 2024",
+    "source_type": "official",
+    "rights_note": "tautan referensi"
+  },
+  {
+    "id": "src-bps-pdb",
+    "title": "Pertumbuhan Ekonomi Indonesia (BPS)",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/statistics-table/2/MTA0IzI=/pertumbuhan-ekonomi--triwulan-.html",
+    "published_at": null,
+    "accessed_at": "2026-09-26",
+    "locator": "tabel pertumbuhan PDB harga konstan tahunan",
+    "source_type": "statistics",
+    "rights_note": "angka diringkas ulang; rujuk tabel BPS"
+  },
+  {
+    "id": "src-wb-wdi",
+    "title": "World Development Indicators: Indonesia GDP growth",
+    "publisher": "World Bank",
+    "url": "https://data.worldbank.org/country/indonesia",
+    "published_at": null,
+    "accessed_at": "2026-09-26",
+    "locator": "indikator NY.GDP.MKTP.KD.ZG",
+    "source_type": "statistics-secondary",
+    "rights_note": "pembanding pemeriksaan, bukan sumber utama"
+  },
+  {
+    "id": "src-bps-kemiskinan",
+    "title": "Tingkat Kemiskinan dan Ketimpangan (BPS)",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/news/2025/07/25/731/poverty-rate-continues-to-decline.html",
+    "published_at": "2025-07-25",
+    "accessed_at": "2026-09-26",
+    "locator": "periode survei Maret; tabel kemiskinan nasional",
+    "source_type": "statistics",
+    "rights_note": "angka diringkas ulang; rujuk publikasi BPS"
+  },
+  {
+    "id": "src-bps-tpt",
+    "title": "Keadaan Ketenagakerjaan Indonesia (BPS Sakernas Agustus)",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/publication/2024/12/06/tenaga-kerja.html",
+    "published_at": null,
+    "accessed_at": "2026-09-26",
+    "locator": "tabel TPT nasional Agustus",
+    "source_type": "statistics",
+    "rights_note": "angka diringkas ulang; rujuk publikasi Sakernas"
+  },
+  {
+    "id": "src-bps-gini",
+    "title": "Gini Ratio dan Distribusi Pengeluaran (BPS)",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/news/2025/07/25/731/poverty-rate-continues-to-decline.html",
+    "published_at": null,
+    "accessed_at": "2026-09-26",
+    "locator": "tabel Gini pengeluaran September",
+    "source_type": "statistics",
+    "rights_note": "angka diringkas ulang; rujuk publikasi BPS"
+  },
+  {
+    "id": "src-bps-inflasi",
+    "title": "Inflasi IHK Desember (BPS)",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/statistics-table/1/MTAxIzE=/inflasi.html",
+    "published_at": null,
+    "accessed_at": "2026-09-26",
+    "locator": "tabel inflasi Desember year-on-year",
+    "source_type": "statistics",
+    "rights_note": "angka diringkas ulang; rujuk tabel BPS"
+  },
+  {
+    "id": "src-bps-sna2008",
+    "title": "Perubahan Tahun Dasar PDB Indonesia Berbasis SNA 2008",
+    "publisher": "Badan Pusat Statistik",
+    "url": "https://www.bps.go.id/id/news/2014/12/31/103/perubahan-tahun-dasar-pdb-indonesia-berbasis-sna-2008.html",
+    "published_at": "2014-12-31",
+    "accessed_at": "2026-09-26",
+    "locator": "penjelasan perubahan tahun dasar",
+    "source_type": "method",
+    "rights_note": "tautan metode"
+  },
+  {
+    "id": "src-dpr-apbn-2024",
+    "title": "UU APBN Tahun Anggaran 2024",
+    "publisher": "DPR RI / Kementerian Keuangan",
+    "url": "https://data.dpr.go.id/",
+    "published_at": "2023-10-16",
+    "accessed_at": "2026-09-26",
+    "locator": "naskah UU APBN 2024, pasal subsidi energi",
+    "source_type": "law",
+    "rights_note": "tautan dokumen hukum"
+  },
+  {
+    "id": "src-kpu-pemilu-2024",
+    "title": "Tahapan dan Hasil Pemilu 2024",
+    "publisher": "KPU RI",
+    "url": "https://www.kpu.go.id/",
+    "published_at": "2024-03-20",
+    "accessed_at": "2026-09-26",
+    "locator": "penetapan hasil pemilu nasional",
+    "source_type": "official",
+    "rights_note": "tautan referensi"
+  },
+  {
+    "id": "src-mk-putus-pemilu-2023",
+    "title": "Putusan MK Nomor 114/PUU-XX/2022 tentang Sistem Pemilu",
+    "publisher": "Mahkamah Konstitusi RI",
+    "url": "https://www.mkri.id/",
+    "published_at": "2023-06-15",
+    "accessed_at": "2026-09-26",
+    "locator": "amar putusan proporsional terbuka",
+    "source_type": "court",
+    "rights_note": "tautan dokumen putusan"
+  }
+]

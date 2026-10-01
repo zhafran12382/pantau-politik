@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ctx-2008-krisis-global",
+    "year": 2008,
+    "label": "Krisis finansial global",
+    "note": "Guncangan ekonomi global. Ditampilkan sebagai konteks waktu, bukan penjelasan atas perubahan angka.",
+    "source_ids": ["src-bps-pdb"],
+    "verified": false
+  },
+  {
+    "id": "ctx-2020-pandemi",
+    "year": 2020,
+    "label": "Pandemi COVID-19",
+    "note": "Kontraksi dan pergeseran tajam pada 2020 terjadi saat pandemi. Ditampilkan sebagai konteks waktu, bukan atribusi sebab-akibat.",
+    "source_ids": ["src-bps-pdb"],
+    "verified": false
+  }
+]

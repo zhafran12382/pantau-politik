@@ -1,0 +1,6 @@
+{
+  "featured_issue_id": "isu-subsidi-energi-apbn",
+  "active_issue_ids": ["isu-subsidi-energi-apbn", "isu-sistem-pemilu-dpr", "isu-angka-kemiskinan-bps"],
+  "max_updates": 5,
+  "max_updates_per_issue": 2
+}

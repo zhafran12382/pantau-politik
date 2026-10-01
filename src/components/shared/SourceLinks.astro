@@ -1,0 +1,9 @@
+---
+import sources from '../../../content/sources/sources.json';
+interface Props { ids: string[]; }
+const { ids } = Astro.props;
+const selected = [...new Set(ids)].map(id => sources.find(s => s.id === id)).filter(s => s !== undefined);
+---
+{selected.length > 0 && <ul class="citations" aria-label="Sumber rujukan">
+  {selected.map(source => <li><a href={source.url} title={`${source.title}. ${source.locator}`}>Sumber: {source.publisher} <span aria-hidden="true">↗</span></a></li>)}
+</ul>}

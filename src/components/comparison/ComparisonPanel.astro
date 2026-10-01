@@ -1,0 +1,28 @@
+---
+import { chartFor, comparisonView } from '../../lib/comparison/view.mjs';
+import ShareActions from '../shared/ShareActions.astro';
+import type { comparisonFor } from '../../lib/comparison/compute.mjs';
+import indicators from '../../../content/indicators/indicators.json';
+import sources from '../../../content/sources/sources.json';
+interface Props { comparison: ReturnType<typeof comparisonFor>; indicator: (typeof indicators)[number]; markers?: Array<{ year: number; label: string; note: string }>; interactive?: boolean; }
+const { comparison, indicator, markers = [], interactive = false } = Astro.props;
+const view = comparisonView(comparison, indicator, sources, 'kalender', markers);
+---
+<section class="result exhibit" aria-labelledby="resultTitle" id="hasil" tabindex="-1">
+  <div class="exhibit__filehead"><span class="file-code">Berkas PP-Exhibit · Pembanding indikator</span><span class="stamp stamp--soft">Angka kondisi — bukan bukti sebab-akibat</span></div>
+  <div id="resultHeader" set:html={view.header} />
+  <div class="chart-shell"><div id="chartWrap" class="chart-plot" set:html={chartFor(comparison, indicator, 'kalender', undefined, markers)} />
+  <p class="meta chart-reading" id="chartReading" role="status">Ketuk atau fokus pada titik untuk membaca nilainya.</p></div>
+  <p class="scale-note">Skala Y bersama dan mencakup nol. Garis terputus berarti data kosong; penanda berlian tanpa garis penghubung berarti versi seri berubah.</p>
+  <p class="caution-line" role="note">Angka menggambarkan kondisi selama periode, bukan bukti sebab-akibat.</p>
+  <div id="summaries" set:html={view.summaries} />
+</section>
+<div class="actions">
+  {interactive && <button type="button" class="button--secondary" id="tableToggle" aria-controls="tableWrap" aria-expanded="true">Sembunyikan angka</button>}
+  {interactive && <button type="button" class="button--secondary" id="downloadCsv">Unduh CSV</button>}
+  <a class="text-link" href="/metode/">Baca metode <span aria-hidden="true">→</span></a>
+  {interactive && <a class="jump-link" href="#compareForm">↑ Ubah pilihan</a>}
+</div>
+{interactive && <ShareActions id="compare-share-url" label="Bagikan perbandingan" />}
+<div class="table-region" id="tableWrap" set:html={view.table} />
+<section class="data-method prose" id="sourceBox" aria-labelledby="metode-data" set:html={view.methodology} />
