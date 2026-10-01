@@ -1,22 +1,30 @@
 # Pantau Politik
 
-Situs statis Astro dengan arah **Editorial Precision** dari `DESIGN.md`.
-Manrope di-host sendiri, warna putih hangat/arang/teal, beranda editorial,
-kronologi bersumber, dan pembanding dengan grafik/tabel yang berbagi model perhitungan.
+Situs statis (Astro, tanpa backend) untuk memahami isu politik Indonesia
+dan memeriksa buktinya: **Pantau** (register isu bernomor + kronologi
+bersumber) dan **Bandingkan** (satu indikator nasional, dua periode
+pemerintahan, grafik + tabel + metode dalam satu layar).
 
-## Pengembangan
+Arah visual: **C “Arsip Ruang Redaksi”** — koran untuk alur baca publik,
+dossier untuk pembungkus berkas/bukti. Spesifikasi: `DESIGN.md` Bab 18,
+kontrak `docs/checkpoints/CP16-arah-C.md`, pelaksanaan
+`docs/checkpoints/CP17-pelaksanaan-C.md`.
+
+> Status jujur: draf pratinjau. 90 slot observasi awal dan seluruh konten
+> BELUM menjalani audit editorial 100%. UI menandai pratinjau di dekat
+> materi terdampak. Identitas pengelola dan kontak koreksi belum ditetapkan.
+> Tanpa `PUBLIC_SITE_URL`, halaman memakai canonical localhost + noindex.
+
+## Mulai cepat (mesin mana pun)
 
 ```sh
 npm ci
-npm run dev
+npm run dev        # pratinjau lokal
+npm run check      # astro check + tsc
+npm run build      # validate + astro build
 ```
 
-Pada Android, install dependency di filesystem internal Termux yang mendukung
-symlink dan executable. Salinan kerja saat ini:
-`/data/data/com.termux/files/usr/tmp/opencode/platform-politik`.
-Kode dibawa kembali ke `/storage/emulated/0/Opencode/platform-politik` setelah diverifikasi.
-
-## Build kandidat tanpa mengganggu localhost
+## Pipeline kandidat (tanpa mengganggu localhost)
 
 ```sh
 npm run check
@@ -24,52 +32,50 @@ npm run build:candidate
 npm test
 DIST_DIR=dist-candidate npm run test:integration
 DIST_DIR=dist-candidate npm run audit:ui
-npm run publish:local
-npm run sync:workspace
+npm run publish:local   # menolak bila audit kandidat belum lolos
 ```
 
-`dist-candidate/` tidak menggantikan `dist/` yang sedang disajikan sampai pemeriksaan lulus.
-Publikasi lokal memasang aset fingerprint terlebih dahulu, lalu mengganti setiap HTML
-secara atomik. Proses server tetap berjalan; versi terdahulu disimpan di `.history/`.
-Sinkronisasi membandingkan hash, mencadangkan file yang ditimpa, serta mengarsipkan
-duplikasi lama `src/src/` agar tidak ikut diperiksa sebagai kode aktif.
+- `npm test`: rumus, missing (`null` ≠ nol), tahun transisi, query,
+  geometri kalender/setara. `test:integration`: DOM aktual HTML build.
+  `audit:ui`: axe-core via jsdom + aset + font (hasil di
+  `.reports/design-audit.json`).
+- `scripts/test-e2e.mjs` hanya smoke check HTML, BUKAN pengujian browser.
+  Viewport nyata, zoom 200%, TalkBack, Web Vitals butuh browser/perangkat —
+  jsdom tidak punya mesin layout.
 
-## Localhost
+## Peta repo
 
-```sh
-node scripts/serve.mjs
-```
+- `src/pages/`, `src/layouts/Base.astro`, `src/components/` (issues,
+  comparison, shared), `src/client/*.mjs` (JS progresif),
+  `src/lib/` (compute, statistik, tanggal), `src/styles/` (token + global).
+- `content/` (isu, indikator, observasi, sumber, koreksi, peristiwa,
+  register-map, penanda konteks), `editorial/`, `public/`, `scripts/`,
+  `tests/`, `docs/checkpoints/`, `docs/decisions/`, `docs/runbooks/`.
+- `DESIGN.md`: spesifikasi desain. `AGENTS.md`: panduan handoff agent.
+  `docs/fonts/README.md`: font dan lisensi.
 
-Alamat default `http://127.0.0.1:4321/`. `scripts/keepalive.mjs` menyediakan launcher
-background untuk lingkungan Termux ini. Cek server yang sudah aktif sebelum memulai
-proses kedua. Server lokal ini dipakai untuk pratinjau.
+## Aturan yang tidak bisa ditawar
 
-## Pemeriksaan yang tersedia
+- Jangan fabrikasi angka, sumber, tanggal, identitas, atau persetujuan
+  editorial. Status JSON bukan bukti pemeriksaan manusia.
+- Cap visual hanya dari daftar jujur: “ARSIP PUBLIK”,
+  “DRAF PRATINJAU — BELUM AUDIT”, “KOREKSI TERCATAT”. Dilarang:
+  “TOP SECRET”, “RAHASIA NEGARA”, “RESMI”, “TERVERIFIKASI”, watermark,
+  logo/brand referensi, atau apa pun yang menutupi informasi nyata.
+- Budget: JS awal ≤150 KB gzip, aset awal ≤1 MB per halaman. Tema terang.
+- Analitik dan iklan nonaktif. Bahasa Indonesia.
 
-- `npm test`: rumus, missing, tahun transisi, query, dan geometri kalender/setara.
-- `npm run test:integration`: DOM aktual dari HTML build; pilihan, sumber, history,
-  tabel, share/copy, kegagalan data, dan fokus penjelasan istilah.
-- `npm run audit:ui`: axe-core pada DOM jsdom, referensi ARIA, ukuran aset awal,
-  kebijakan script, font serta angka tabular. Hasil di `.reports/design-audit.json`.
-- `scripts/test-e2e.mjs` merupakan nama lama untuk smoke check HTML; bukan pengujian
-  browser E2E. Ukuran layar nyata, zoom 200%, TalkBack, dan Web Vitals harus diperiksa
-  memakai browser/perangkat. jsdom tidak mempunyai mesin layout.
+## Catatan Android/Termux (diabaikan di mesin normal)
 
-## Status isi dan rilis
+Di perangkat Android ini ada dua salinan: sumber kanonis
+`/data/data/com.termux/files/usr/tmp/opencode/platform-politik`
+(filesystem internal, dukung symlink/executable) dan arsip
+`/storage/emulated/0/Opencode/platform-politik`. Edit dan build di salinan
+kanonis, lalu `npm run sync:workspace`. Di mesin normal, kerjakan langsung
+di root repo — tidak ada dual-copy.
 
-Konten dan 90 slot observasi awal adalah materi kerja yang belum menjalani audit
-editorial 100%. Jangan mengartikan status dalam JSON sebagai bukti pemeriksaan manusia.
-UI menandai pratinjau; identitas pengelola dan kontak koreksi harus ditetapkan sebelum rilis.
-Tanpa `PUBLIC_SITE_URL`, halaman memakai canonical localhost dan noindex.
-
-Sebelum publikasi, jalankan checkpoint editorial, sumber, aksesibilitas manual,
-deployment, serta persetujuan pada rencana implementasi. Analitik dan iklan nonaktif.
-Upgrade dependency Astro beserta temuan audit paket juga perlu ditinjau untuk rilis;
-redesign ini tidak mengubah major version framework.
-
-## Pedoman
-
-- `DESIGN.md`: spesifikasi desain.
-- `AGENTS.md`: panduan agent dan skill anti-slop.
-- `docs/fonts/README.md`: font dan lisensi.
-- `docs/checkpoints/CP-redesign.md`: hasil serta batas pemeriksaan redesign.
+Localhost: `node scripts/serve.mjs` (default `http://127.0.0.1:4321/`);
+`scripts/keepalive.mjs [port]` untuk daemon background. Cek server aktif
+sebelum memulai proses kedua. Batasan perangkat: tanpa browser
+(Playwright/Chromium tidak tersedia), skill-loader `ripgrep` rusak di
+arm64-android (baca berkas langsung), `sharp` native gagal.
