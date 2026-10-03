@@ -37,6 +37,18 @@ function shortRange(years) {
   return `${years[0]}–${s(years.at(-1))}`;
 }
 
+function footerLines(text, width) {
+  const limit = Math.max(18, Math.floor((width - 24) / 8));
+  const lines = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    if (line && line.length + word.length + 1 > limit) { lines.push(line); line = ''; }
+    line += `${line ? ' ' : ''}${word}`;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
 export function chartSVG({
   yearsA, sumA, yearsB, sumB, unit, idA = 'Periode A', idB = 'Periode B',
   mode = 'kalender', precision = 1, chartId = 'comparison-chart', width = 640,
@@ -46,8 +58,12 @@ export function chartSVG({
 }) {
   const model = buildChartModel({ yearsA, sumA, yearsB, sumB, mode });
   const W = Math.max(300, Math.round(width));
-  const H = W < 640 ? 320 : 420;
-  const left = 64, right = W < 640 ? 64 : 96, top = 28, bottom = 64;
+  const compact = W < 640;
+  const baseHeight = compact ? 320 : 420;
+  const foot = footer ? footerLines(footer, W) : [];
+  const footerHeight = foot.length ? foot.length * 20 + 12 : 0;
+  const H = baseHeight + footerHeight;
+  const left = 64, right = compact ? 28 : 96, top = 28, bottom = 64 + footerHeight;
   const values = [...model.seriesA, ...model.seriesB].filter(finite);
   if (!values.length) return '<p class="notice">Belum ada observasi untuk digambar. Periksa cakupan di tabel dan metode.</p>';
   const domain = niceDomain(values);
@@ -62,7 +78,7 @@ export function chartSVG({
     if (idx >= 0) markerByLabel.set(idx, m);
   }
 
-  // Segmen garis: gap untuk data kosong; dotted untuk pergantian versi metode.
+  // Data kosong dan perubahan metode memutus garis; hanya perubahan memakai berlian.
   function segments(points) {
     const segs = [];
     let current = null;
@@ -80,18 +96,16 @@ export function chartSVG({
   function seriesSVG(points, kind, label) {
     let out = '';
     for (const seg of segments(points)) {
-      // Pergantian versi: garis DIPUTUS (tanpa penghubung) + penanda berlian.
-      // Berbeda encoding dengan data kosong (gap polos tanpa penanda).
-      for (const [, to] of seg.breaks) {
-        const i2 = points.indexOf(to);
-        out += `<rect x="${(x(i2) - 4).toFixed(2)}" y="${(y(to.value) - 4).toFixed(2)}" width="8" height="8" fill="var(--color-surface)" stroke="var(--color-series-${kind})" stroke-width="2"><title>${escapeHtml(label)} · versi seri berubah pada ${to.year}: definisi dapat berbeda, tidak dibandingkan lintas versi</title></rect>`;
-      }
+      const methodBreaks = new Set(seg.breaks.map(([, to]) => to));
       const d = seg.points.map(({ index, point }, i) => `${i ? 'L' : 'M'}${x(index).toFixed(2)},${y(point.value).toFixed(2)}`).join(' ');
       out += `<path d="${d}" stroke="var(--color-series-${kind})" stroke-width="3" fill="none" stroke-linecap="round"${kind === 'b' ? ' stroke-dasharray="8 5"' : ''}/>`;
       for (const { index, point } of seg.points) {
         const X = x(index).toFixed(2), Y = y(point.value).toFixed(2);
-        const label_text = `${label} · ${point.year}: ${point.value.toLocaleString('id-ID', { maximumFractionDigits: precision })} ${unit}`;
-        out += kind === 'a'
+        const changed = methodBreaks.has(point);
+        const label_text = `${label} · ${point.year}: ${point.value.toLocaleString('id-ID', { maximumFractionDigits: precision })} ${unit}${changed ? ' · versi seri berubah: definisi dapat berbeda, tidak dibandingkan lintas versi' : ''}`;
+        out += changed
+          ? `<polygon data-method-break="true" points="${X},${(y(point.value) - 7).toFixed(2)} ${(x(index) + 7).toFixed(2)},${Y} ${X},${(y(point.value) + 7).toFixed(2)} ${(x(index) - 7).toFixed(2)},${Y}" tabindex="0" role="img" aria-label="${escapeHtml(label_text)}" fill="var(--color-surface)" stroke="var(--color-series-${kind})" stroke-width="2"><title>${escapeHtml(label_text)}</title></polygon>`
+          : kind === 'a'
           ? `<circle cx="${X}" cy="${Y}" r="4.5" tabindex="0" role="img" aria-label="${escapeHtml(label_text)}"><title>${escapeHtml(label_text)}</title></circle>`
           : `<rect x="${(x(index) - 4.5).toFixed(2)}" y="${(y(point.value) - 4.5).toFixed(2)}" width="9" height="9" tabindex="0" role="img" aria-label="${escapeHtml(label_text)}"><title>${escapeHtml(label_text)}</title></rect>`;
       }
@@ -101,26 +115,29 @@ export function chartSVG({
 
   const lastValid = points => { for (let i = points.length - 1; i >= 0; i--) if (finite(points[i].value)) return { index: i, point: points[i] }; return null; };
   const endA = lastValid(model.pointsA), endB = lastValid(model.pointsB);
-  const endLabel = (end, kind, text) => end
-    ? `<text x="${(x(end.index) + (kind === 'a' ? 10 : 12)).toFixed(2)}" y="${(y(end.point.value) + 4).toFixed(2)}" fill="var(--color-series-${kind})" font-weight="600">${escapeHtml(text)}</text>`
-    : '';
+  const endLabel = (end, kind, text) => {
+    if (!end) return '';
+    const toLeft = x(end.index) + 12 + text.length * 8 > W - 8;
+    return `<text x="${(x(end.index) + (toLeft ? -12 : 12)).toFixed(2)}" y="${(y(end.point.value) + 4).toFixed(2)}" text-anchor="${toLeft ? 'end' : 'start'}" fill="var(--color-series-${kind})" font-weight="600">${escapeHtml(text)}</text>`;
+  };
 
   const zeroInDomain = domain.min < 0 && domain.max > 0;
   const titleId = escapeHtml(`${chartId}-title`), descriptionId = escapeHtml(`${chartId}-description`);
   const yFmt = tick => tick.toLocaleString('id-ID', { maximumFractionDigits: Math.min(3, Math.max(1, precision)) });
-  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${titleId} ${descriptionId}">
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" font-size="14" role="img" aria-labelledby="${titleId} ${descriptionId}">
     <title id="${titleId}">Grafik tren, satuan ${escapeHtml(unit)}</title>
     <desc id="${descriptionId}">${escapeHtml(idA)} dan ${escapeHtml(idB)}. ${mode === 'setara' ? 'Tahun kalender penuh disejajarkan; bukan tahun tepat sejak pelantikan.' : 'Posisi tahun kalender sebenarnya, termasuk jeda tahun transisi.'} Seluruh angka tersedia pada tabel.</desc>
-    ${[...gapSet].map(year => { const i = model.labels.indexOf(year); return i < 0 ? '' : `<rect x="${(x(i) - (x(1) - x(0)) / 2).toFixed(2)}" y="${top}" width="${((x(1) - x(0))).toFixed(2)}" height="${H - top - bottom}" fill="var(--color-surface-muted)"/><text x="${x(i).toFixed(2)}" y="${(top + 12).toFixed(2)}" text-anchor="middle" font-size="11">transisi</text>`; }).join('')}
-    ${[...markerByLabel].map(([index, m]) => `<g><line x1="${x(index)}" y1="${top}" x2="${x(index)}" y2="${H - bottom}" stroke="var(--color-text-muted)" stroke-width="1" stroke-dasharray="3 3"/><text x="${Math.min(x(index) + 4, W - right - 4).toFixed(2)}" y="${(top + 12).toFixed(2)}" font-size="11">${escapeHtml(m.label)}</text><title>${escapeHtml(m.label)}: ${escapeHtml(m.note)}</title></g>`).join('')}
-    ${domain.ticks.map((tick, ti) => `<g><line x1="${left}" x2="${W - right}" y1="${y(tick)}" y2="${y(tick)}" stroke="${tick === 0 && zeroInDomain ? 'var(--color-text)' : 'var(--color-divider)'}" stroke-width="${tick === 0 && zeroInDomain ? 1.5 : 1}"/><text x="${left - 10}" y="${(y(tick) + 5).toFixed(2)}" text-anchor="end">${escapeHtml(yFmt(tick))}${ti === domain.ticks.length - 1 ? ` ${escapeHtml(unit)}` : ''}</text></g>`).join('')}
+    ${[...gapSet].map(year => { const i = model.labels.indexOf(year); return i < 0 ? '' : `<rect x="${(x(i) - (x(1) - x(0)) / 2).toFixed(2)}" y="${top}" width="${((x(1) - x(0))).toFixed(2)}" height="${H - top - bottom}" fill="var(--color-surface-muted)"/><text x="${x(i).toFixed(2)}" y="${(top + 14).toFixed(2)}" text-anchor="middle" font-size="14">transisi</text>`; }).join('')}
+    ${[...markerByLabel].map(([index, m]) => `<g><line x1="${x(index)}" y1="${top}" x2="${x(index)}" y2="${H - bottom}" stroke="var(--color-text-muted)" stroke-width="1" stroke-dasharray="3 3"/><text x="${Math.max(12, Math.min(x(index) + 4, W - 12 - m.label.length * 8)).toFixed(2)}" y="${(top + 14).toFixed(2)}" font-size="14">${escapeHtml(m.label)}</text><title>${escapeHtml(m.label)}: ${escapeHtml(m.note)}</title></g>`).join('')}
+    <text data-chart-unit="true" x="${left}" y="16" font-size="14">${escapeHtml(unit)}</text>
+    ${domain.ticks.map(tick => `<g><line x1="${left}" x2="${W - right}" y1="${y(tick)}" y2="${y(tick)}" stroke="${tick === 0 && zeroInDomain ? 'var(--color-text)' : 'var(--color-divider)'}" stroke-width="${tick === 0 && zeroInDomain ? 1.5 : 1}"/><text x="${left - 10}" y="${(y(tick) + 5).toFixed(2)}" text-anchor="end">${escapeHtml(yFmt(tick))}</text></g>`).join('')}
     ${seriesSVG(model.pointsA, 'a', idA)}${seriesSVG(model.pointsB, 'b', idB)}
     ${endLabel(endA, 'a', shortRange(yearsA))}${endLabel(endB, 'b', shortRange(yearsB))}
     ${ticks.map(index => `<text x="${x(index).toFixed(2)}" y="${(H - bottom + 24).toFixed(2)}" text-anchor="middle">${mode === 'setara' ? `ke-${model.labels[index]}` : model.labels[index]}</text>`).join('')}
-    ${footer ? `<text x="${left}" y="${(H - 8).toFixed(2)}" font-size="11">${escapeHtml(footer)}</text>` : ''}
+    ${foot.length ? `<text class="chart-footer" font-size="14">${foot.map((line, i) => `<tspan x="12" y="${baseHeight + 8 + i * 20}">${escapeHtml(line)}</tspan>`).join('')}</text>` : ''}
   </svg>`;
 }
 
 export function responsiveChart(args) {
-  return `<div class="chart-wide">${chartSVG({ ...args, width: 680, chartId: `${args.chartId}-wide` })}</div><div class="chart-compact">${chartSVG({ ...args, width: 340, chartId: `${args.chartId}-compact` })}</div>`;
+  return `<div class="chart-wide">${chartSVG({ ...args, width: 640, chartId: `${args.chartId}-wide` })}</div><div class="chart-compact">${chartSVG({ ...args, width: 300, chartId: `${args.chartId}-compact` })}</div>`;
 }

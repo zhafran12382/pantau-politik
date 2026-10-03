@@ -1,5 +1,4 @@
-// Filter register isu: pencarian teks + topik + query URL.
-// Tanpa JS seluruh isu tampil; dengan JS keadaan dapat dibagikan via URL.
+// Tanpa JS, seluruh register tetap terbaca; kontrol baru aktif setelah inisialisasi.
 export function initIssueFilter(doc, win) {
   const grid = doc.getElementById('issueGrid');
   const input = doc.getElementById('issueSearch');
@@ -7,59 +6,69 @@ export function initIssueFilter(doc, win) {
   const empty = doc.getElementById('noResults');
   const reset = doc.getElementById('resetFilter');
   const count = doc.getElementById('resultCount');
-  if (!grid || !input || !chips) return;
-  const total = grid.querySelectorAll('.issue-card').length;
+  const controls = doc.getElementById('issueFilterControls');
+  const fallback = doc.getElementById('filterFallback');
+  if (!grid || !input || !chips || !empty) return false;
+  if (grid.dataset.filterReady === 'true') return true;
+  const buttons = [...chips.querySelectorAll('button[data-category]')];
+  const entries = [...grid.querySelectorAll('.register-entry')];
+  const cards = [...grid.querySelectorAll('.issue-card')];
+  const items = [...cards, ...entries];
+  const counted = entries.length ? entries : cards;
+  const total = counted.length;
+  const topics = buttons.filter(button => button.dataset.category).length;
   let category = '';
+
   const syncUrl = () => {
-    const params = new URLSearchParams();
-    if (input.value.trim()) params.set('cari', input.value.trim());
-    if (category) params.set('topik', category);
-    const query = params.toString();
-    win.history.replaceState(null, '', query ? `${win.location.pathname}?${query}` : win.location.pathname);
+    const url = new URL(win.location.href);
+    url.searchParams.delete('cari');
+    url.searchParams.delete('topik');
+    if (input.value.trim()) url.searchParams.set('cari', input.value.trim());
+    if (category) url.searchParams.set('topik', category);
+    // Hash dan parameter lain tidak dimiliki filter register.
+    win.history.replaceState(win.history.state, '', `${url.pathname}${url.search}${url.hash}`);
   };
-  const apply = () => {
+  const apply = ({ sync = true } = {}) => {
     const query = input.value.trim().toLowerCase();
-    let visible = 0;
-    for (const card of grid.querySelectorAll('.issue-card')) {
-      const matchCategory = !category || card.dataset.category === category;
-      const matchQuery = !query || (card.dataset.search || '').includes(query);
-      const show = matchCategory && matchQuery;
-      card.hidden = !show;
-      if (show) visible++;
+    for (const item of items) {
+      item.hidden = !((!category || item.dataset.category === category) && (!query || (item.dataset.search || '').includes(query)));
     }
+    const visible = counted.filter(item => !item.hidden).length;
+    for (const group of grid.querySelectorAll('.supporting-issues, .issue-grid')) {
+      group.hidden = !group.querySelector('.issue-card:not([hidden])');
+    }
+    for (const button of buttons) button.setAttribute('aria-pressed', String((button.dataset.category || '') === category));
     empty.hidden = visible > 0;
-    const active = query || category;
+    const active = Boolean(query || category);
     if (reset) reset.hidden = !active;
-    if (count) count.textContent = active ? `${visible} dari ${total} isu` : `${total} isu · ${chips.querySelectorAll('button[data-category]:not([data-category=""])').length} topik`;
-    syncUrl();
+    if (count) count.textContent = active ? `${visible} dari ${total} isu` : `${total} isu · ${topics} topik`;
+    if (sync) syncUrl();
   };
-  // Pulihkan keadaan dari URL (tautan berbagi).
-  try {
+  const restore = () => {
     const params = new URLSearchParams(win.location.search);
-    if (params.get('cari')) input.value = params.get('cari');
-    const topik = params.get('topik') || '';
-    if (topik) {
-      const button = chips.querySelector(`button[data-category="${CSS.escape(topik)}"]`);
-      if (button) {
-        category = topik;
-        for (const chip of chips.querySelectorAll('button')) chip.setAttribute('aria-pressed', String(chip === button));
-      }
-    }
-  } catch { /* abaikan query rusak: tampilkan semua */ }
-  input.addEventListener('input', apply);
+    input.value = params.get('cari') || '';
+    const topic = params.get('topik') || '';
+    category = buttons.some(button => button.dataset.category === topic) ? topic : '';
+  };
+  restore();
+  apply();
+  input.addEventListener('input', () => apply());
   chips.addEventListener('click', event => {
-    const button = event.target.closest('button[data-category]');
-    if (!button) return;
+    const button = event.target?.closest?.('button[data-category]');
+    if (!button || !buttons.includes(button)) return;
     category = button.dataset.category || '';
-    for (const chip of chips.querySelectorAll('button')) chip.setAttribute('aria-pressed', String(chip === button));
     apply();
   });
   reset?.addEventListener('click', () => {
     input.value = '';
     category = '';
-    for (const chip of chips.querySelectorAll('button')) chip.setAttribute('aria-pressed', String(chip.dataset.category === ''));
     apply();
     input.focus();
   });
-  apply();
+  win.addEventListener('popstate', () => { restore(); apply({ sync: false }); });
+  for (const control of [input, ...buttons, reset]) if (control) control.disabled = false;
+  if (controls) controls.hidden = false;
+  if (fallback) fallback.hidden = true;
+  grid.dataset.filterReady = 'true';
+  return true;
 }

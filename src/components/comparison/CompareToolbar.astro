@@ -4,7 +4,8 @@ import administrations from '../../../content/administrations/administrations.js
 import { DEFAULT_COMPARISON } from '../../lib/comparison/url.mjs';
 const labels: Record<string, string> = { 'pdb-growth': 'Pertumbuhan PDB riil', kemiskinan: 'Kemiskinan', tpt: 'Pengangguran terbuka', gini: 'Gini pengeluaran', inflasi: 'Inflasi IHK' };
 ---
-<div class="compare-sticky">
+<div class="compare-toolbar compare-sticky dossier-frame">
+<div class="filehead"><span class="filing-tab">PILIHAN PEMBANDING</span><span class="file-code">Satu indikator / dua periode</span></div>
 <form class="compare-controls" id="compareForm">
   <fieldset id="compareFields" disabled>
     <legend class="sr-only">Pilih indikator dan dua periode pemerintahan</legend>

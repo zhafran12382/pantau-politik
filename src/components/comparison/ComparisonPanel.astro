@@ -1,5 +1,6 @@
 ---
 import { chartFor, comparisonView } from '../../lib/comparison/view.mjs';
+import { csvEligibility } from '../../lib/comparison/csv.mjs';
 import ShareActions from '../shared/ShareActions.astro';
 import type { comparisonFor } from '../../lib/comparison/compute.mjs';
 import indicators from '../../../content/indicators/indicators.json';
@@ -7,22 +8,33 @@ import sources from '../../../content/sources/sources.json';
 interface Props { comparison: ReturnType<typeof comparisonFor>; indicator: (typeof indicators)[number]; markers?: Array<{ year: number; label: string; note: string }>; interactive?: boolean; }
 const { comparison, indicator, markers = [], interactive = false } = Astro.props;
 const view = comparisonView(comparison, indicator, sources, 'kalender', markers);
+const csv = csvEligibility(comparison, indicator);
 ---
-<section class="result exhibit" aria-labelledby="resultTitle" id="hasil" tabindex="-1">
-  <div class="exhibit__filehead"><span class="file-code">Berkas PP-Exhibit · Pembanding indikator</span><span class="stamp stamp--soft">Angka kondisi — bukan bukti sebab-akibat</span></div>
-  <div id="resultHeader" set:html={view.header} />
-  <div class="chart-shell"><div id="chartWrap" class="chart-plot" set:html={chartFor(comparison, indicator, 'kalender', undefined, markers)} />
-  <p class="meta chart-reading" id="chartReading" role="status">Ketuk atau fokus pada titik untuk membaca nilainya.</p></div>
-  <p class="scale-note">Skala Y bersama dan mencakup nol. Garis terputus berarti data kosong; penanda berlian tanpa garis penghubung berarti versi seri berubah.</p>
-  <p class="caution-line" role="note">Angka menggambarkan kondisi selama periode, bukan bukti sebab-akibat.</p>
-  <div id="summaries" set:html={view.summaries} />
+<section class="result exhibit dossier-frame" aria-labelledby="resultTitle" id="hasil" tabindex="-1">
+  <div class="exhibit__filehead filehead">
+    <span class="filing-tab">EXHIBIT DATA</span>
+    <span class="file-code" id="exhibitCode">Indikator / {indicator.id}</span>
+    <span class="stamp stamp--soft" role="note">DRAF PRATINJAU — BELUM AUDIT</span>
+  </div>
+  <div class="exhibit__body">
+    <p class="meta" role="note">Dataset pratinjau. Status metode pada data bukan bukti audit editorial; angka ini belum menyelesaikan pemeriksaan terhadap dokumen sumber.</p>
+    <div id="resultHeader" set:html={view.header} />
+    <div class="chart-shell">
+      <div id="chartWrap" class="chart-plot" tabindex="0" role="region" aria-label="Grafik pembanding; angka lengkap tersedia pada tabel" set:html={chartFor(comparison, indicator, 'kalender', undefined, markers)} />
+      <p class="meta chart-reading" id="chartReading" role="status">Seluruh nilai dan tahun asal tercantum pada tabel di bawah grafik.</p>
+    </div>
+    <p class="scale-note">Skala Y bersama dan mencakup nol. Garis terputus berarti data kosong; penanda berlian tanpa garis penghubung berarti versi seri berubah.</p>
+    <p class="caution-line" role="note">Angka menggambarkan kondisi selama periode, bukan bukti sebab-akibat.</p>
+    <div id="summaries" set:html={view.summaries} />
+    <div class="actions">
+      {interactive && <button type="button" class="button--secondary" id="tableToggle" aria-controls="tableWrap" aria-expanded="true" hidden disabled>Sembunyikan angka</button>}
+      {interactive && <button type="button" class="button--secondary" id="downloadCsv" aria-describedby="csvNote" hidden disabled>Unduh CSV</button>}
+      <a class="text-link" href="/metode/">Baca metode</a>
+      {interactive && <a class="jump-link" href="#compareForm">Ubah pilihan</a>}
+    </div>
+    {interactive && <p class="meta csv-note" id="csvNote" role="note">{csv.reason}</p>}
+    {interactive && <ShareActions id="compare-share-url" label="Bagikan perbandingan" />}
+    <div class="table-region" id="tableWrap" tabindex="0" role="region" aria-label="Tabel angka pembanding" set:html={view.table} />
+    <section class="data-method prose" id="sourceBox" aria-labelledby="metode-data" set:html={view.methodology} />
+  </div>
 </section>
-<div class="actions">
-  {interactive && <button type="button" class="button--secondary" id="tableToggle" aria-controls="tableWrap" aria-expanded="true">Sembunyikan angka</button>}
-  {interactive && <button type="button" class="button--secondary" id="downloadCsv">Unduh CSV</button>}
-  <a class="text-link" href="/metode/">Baca metode <span aria-hidden="true">→</span></a>
-  {interactive && <a class="jump-link" href="#compareForm">↑ Ubah pilihan</a>}
-</div>
-{interactive && <ShareActions id="compare-share-url" label="Bagikan perbandingan" />}
-<div class="table-region" id="tableWrap" set:html={view.table} />
-<section class="data-method prose" id="sourceBox" aria-labelledby="metode-data" set:html={view.methodology} />

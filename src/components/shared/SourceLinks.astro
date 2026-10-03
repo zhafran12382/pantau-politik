@@ -1,9 +1,13 @@
 ---
 import sources from '../../../content/sources/sources.json';
+import { safeSourceUrl } from '../../lib/comparison/view.mjs';
 interface Props { ids: string[]; }
 const { ids } = Astro.props;
-const selected = [...new Set(ids)].map(id => sources.find(s => s.id === id)).filter(s => s !== undefined);
+const selected = [...new Set(ids)].map(id => sources.find(source => source.id === id)).filter(source => source !== undefined);
 ---
 {selected.length > 0 && <ul class="citations" aria-label="Sumber rujukan">
-  {selected.map(source => <li><a href={source.url} title={`${source.title}. ${source.locator}`}>Sumber: {source.publisher} <span aria-hidden="true">↗</span></a></li>)}
+  {selected.map(source => {
+    const href = safeSourceUrl(source.url);
+    return <li data-source-id={source.id}>{href ? <a href={href} rel="noopener" title={`${source.title}. ${source.locator}`}>Sumber: {source.publisher}<span class="sr-only">: {source.title}. {source.locator}</span> <span aria-hidden="true">↗</span></a> : <span>Sumber: {source.publisher}. {source.title}</span>}</li>;
+  })}
 </ul>}

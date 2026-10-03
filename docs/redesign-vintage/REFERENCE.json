@@ -1,0 +1,10 @@
+{
+  "provider": "openai-codex",
+  "model": "gpt-image-2-medium",
+  "pixel_size": "1536x1024",
+  "image_request_id": "e7bc38d6-788e-4f61-9c7a-b58d9bc58b40",
+  "image": "homepage-v2.png",
+  "sha256": "ccaf3639245c17ce1a455c397577325b8fdab13e321b83195cfb3a2dd256b2ec",
+  "status": "revised design reference, not implementation/browser QA",
+  "review": "Full image and mobile crop visually inspected; actual CSS tokens/fonts follow PLAN, not bitmap/OCR."
+}

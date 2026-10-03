@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-const DIST = new URL('../dist/', import.meta.url);
+const DIST = path.resolve(process.env.DIST_DIR || 'dist');
 async function* walk(dir) {
   const ents = await readdir(dir, { withFileTypes: true });
   for (const e of ents) {
@@ -13,7 +13,7 @@ async function* walk(dir) {
 const forbidden = ['__DRAFT__', 'SYNTHETIC-TEST-MARKER', 'redaksi-internal', 'TODO-EDITORIAL'];
 let files = 0;
 try {
-  for await (const f of walk(new URL(DIST).pathname)) {
+  for await (const f of walk(DIST)) {
     files++;
     if (/\.(html|js|json|xml|txt)$/.test(f)) {
       const txt = await readFile(f, 'utf-8').catch(() => '');
@@ -23,7 +23,7 @@ try {
     }
   }
 } catch (e) {
-  console.error('dist/ belum ada. Jalankan `npm run build` dahulu.');
+  console.error(`Artefak ${DIST} belum tersedia atau tidak dapat dibaca. Build kandidat yang sama dahulu.`, e.message);
   process.exit(1);
 }
 console.log(`Artefak diperiksa: ${files} berkas, tanpa penanda draf/internal.`);

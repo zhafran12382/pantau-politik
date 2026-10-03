@@ -1,12 +1,14 @@
 ---
 import { sourceKind, safeSourceUrl } from '../../lib/comparison/view.mjs';
 import { formatTanggalID } from '../../lib/dates/dates.mjs';
-interface Props { source: any; }
+import type sources from '../../../content/sources/sources.json';
+interface Props { source: (typeof sources)[number]; }
 const { source } = Astro.props;
 const href = safeSourceUrl(source.url);
-const released = source.published_at ? formatTanggalID(source.published_at) : 'tanggal rilis tidak tercatat';
 ---
-<li id={source.id}>
-  <span class="source-kind">{sourceKind(source.source_type)}</span> {href ? <a href={href} rel="noopener">{source.title} <span aria-hidden="true">↗</span></a> : source.title}
-  <span class="meta">{source.publisher} · {source.locator}</span><span class="meta">Rilis: {released} · Diambil: {formatTanggalID(source.accessed_at)}.</span>
+<li class="source-record dossier-frame" id={source.id}>
+  <div class="source-filehead filehead"><span class="source-kind">{sourceKind(source.source_type)}</span><span class="file-code">{source.id}</span></div>
+  <h3>{href ? <a href={href} rel="noopener">{source.title} <span aria-hidden="true">↗</span></a> : source.title}</h3>
+  <p class="meta">{source.publisher} · {source.locator}</p>
+  <p class="meta">Rilis: {source.published_at ? <time datetime={source.published_at}>{formatTanggalID(source.published_at)}</time> : 'Tanggal rilis tidak tercatat'} · Diambil: <time datetime={source.accessed_at}>{formatTanggalID(source.accessed_at)}</time>.</p>
 </li>

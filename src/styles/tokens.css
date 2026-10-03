@@ -3,7 +3,8 @@
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
-  /* Arah C “Arsip Ruang Redaksi”: kertas koran + tinta + merah cap. */
+
+  /* Dossier Vintage: same archive palette, clean reading and plot surfaces. */
   --color-page: #f3ecdc;
   --color-surface: #faf6ea;
   --color-surface-muted: #e9dfc9;
@@ -36,12 +37,15 @@
   --color-chip-done-soft: #e9e2d2;
   --color-chip-arch: #6f6353;
   --color-chip-arch-soft: #e9dfc9;
+
   --space-1: .25rem;
   --space-2: .5rem;
   --space-3: .75rem;
   --space-4: 1rem;
+  --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
+  --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
   --space-24: 6rem;
@@ -49,19 +53,24 @@
   --text-ui: 1rem;
   --text-body: 1.0625rem;
   --text-lead: clamp(1.0625rem, 1rem + .3vw, 1.1875rem);
-  --text-card: clamp(1.1875rem, 1.1rem + .4vw, 1.375rem);
-  --text-section: clamp(1.375rem, 1.2rem + .8vw, 1.75rem);
-  --text-title: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
-  --text-display: clamp(2.25rem, 1.5rem + 3.2vw, 4.25rem);
-  --text-number: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  --text-card: clamp(1.25rem, 1.1rem + .65vw, 1.625rem);
+  --text-section: clamp(1.5rem, 1.3rem + .65vw, 1.875rem);
+  --text-title: clamp(1.875rem, 1.45rem + 1.75vw, 3rem);
+  --text-display: clamp(2rem, 1.5rem + 2.8vw, 3.25rem);
+  --text-masthead: clamp(2.25rem, 1.25rem + 5vw, 4.5rem);
+  --text-number: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
   --container-max: 75rem;
   --measure: 68ch;
   --gutter: 1rem;
-  --radius-control: .25rem;
-  --radius-panel: .25rem;
-  --radius-feature: .25rem;
-  --shadow-overlay: 0 8px 24px rgb(33 26 18 / 14%);
+  --radius-control: .125rem;
+  --radius-panel: .125rem;
+  --radius-feature: .125rem;
   --rule-double: 4px double var(--color-rule-strong);
+  --rule-filing: 1px dashed var(--color-control-border);
+  --shadow-dossier: 3px 3px 0 var(--color-rule-strong);
+  --shadow-overlay: 0 8px 24px rgb(33 26 18 / 14%);
+  --grain-ink: rgb(33 26 18 / .025);
+  --grain-paper: rgb(250 246 234 / .4);
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --ease-ui: cubic-bezier(.2, 0, 0, 1);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildChartModel, chartSVG } from '../../src/lib/comparison/chart.mjs';
 import { comparisonFor } from '../../src/lib/comparison/compute.mjs';
-import { comparisonView, sourceKind } from '../../src/lib/comparison/view.mjs';
+import { comparisonView, comparisonPreviewView, sourceKind } from '../../src/lib/comparison/view.mjs';
 import { medianIgnoringNull, extremesByYear } from '../../src/lib/statistics/stats.mjs';
 import { relativeID } from '../../src/lib/dates/dates.mjs';
 
@@ -10,6 +10,74 @@ const yearsA = [2005, 2006, 2007], yearsB = [2015, 2016, 2017];
 const sumA = { values: [1, null, 3], seriesVersions: ['v1', 'v1', 'v2'] };
 const sumB = { values: [4, 5, 6], seriesVersions: ['v1', 'v1', 'v1'] };
 const args = { yearsA, sumA, yearsB, sumB, unit: '%', idA: 'A', idB: 'B' };
+
+function methodFixture(stat_kind = 'endpoint-diff-pp') {
+  const admins = [{ id: 'a', label: 'A', start_date: '2004-10-20', end_date: '2008-10-20' }, { id: 'b', label: 'B', start_date: '2014-10-20', end_date: '2018-10-20' }];
+  const indicator = { id: 'fixture', label: 'Fixture sintetis', unit: '%', stat_kind, display_precision: 2, audit_status: 'approved', source_ids: [], definition: 'Fixture', reference_period: 'Tahunan', method_version: 'v1', comparability_notes: 'Fixture' };
+  const observations = [2005, 2006, 2007, 2015, 2016, 2017].map((year, i) => ({ indicator_id: indicator.id, period_start: `${year}-01-01`, value: [10, 8, 6, 5, 4, 3][i], series_version: i === 1 ? 'v2' : 'v1' }));
+  return { indicator, comparison: comparisonFor(indicator, admins, observations, 'a', 'b') };
+}
+
+test('regression: incompatible method versions suppress median as well as primary statistic', () => {
+  for (const kind of ['mean', 'endpoint-diff-pp']) {
+    const { indicator, comparison } = methodFixture(kind);
+    const view = comparisonView(comparison, indicator, [], 'kalender');
+    assert.equal(comparison.sumA.stat, null);
+    assert.equal(comparison.sumA.median, null);
+    const firstSummary = view.summaries.split('</section>')[0];
+    assert.doesNotMatch(firstSummary, /<dt>Median/);
+    assert.doesNotMatch(view.summaries, /class="delta-line"|Selisih rata-rata|Selisih perubahan/);
+    assert.match(firstSummary, /Statistik lintas segmen tidak dihitung/);
+  }
+});
+
+test('regression: method-break marker is a focusable diamond, not an ordinary square', () => {
+  const changed = chartSVG({ ...args, sumA: { values: [1, 2, 3], seriesVersions: ['v1', 'v2', 'v2'] } });
+  assert.match(changed, /<polygon[^>]*data-method-break="true"[^>]*points="[^"]+"[^>]*tabindex="0"/);
+  assert.match(changed, /aria-label="[^"]*versi seri berubah/);
+  assert.equal((changed.match(/<circle /g) || []).length, 2, 'diamond replaces normal marker at the changed point');
+  const points = changed.match(/<polygon[^>]*points="([^"]+)"/)[1].split(' ').map(pair => pair.split(',').map(Number));
+  assert.equal(points[0][0], points[2][0]);
+  assert.equal(points[1][1], points[3][1]);
+  assert.ok(points[0][1] < points[1][1] && points[2][1] > points[1][1]);
+  assert.ok(points[3][0] < points[0][0] && points[1][0] > points[0][0]);
+});
+
+test('regression: compact SVG preserves readable text and wraps the entire footer', () => {
+  const svg = chartSVG({ ...args, width: 300, footer: 'Pantau Politik · 2 sumber · angka kondisi, bukan bukti sebab-akibat' });
+  assert.doesNotMatch(svg, /font-size="(?:10|11|12|13)"/);
+  assert.match(svg, /font-size="14"/);
+  assert.ok((svg.match(/<tspan /g) || []).length > 1);
+  const lines = [...svg.matchAll(/<tspan[^>]*>([^<]+)<\/tspan>/g)].map(match => match[1]);
+  assert.equal(lines.join(' '), 'Pantau Politik · 2 sumber · angka kondisi, bukan bukti sebab-akibat');
+  assert.ok(lines.every(line => line.length <= Math.floor((300 - 24) / 8)));
+});
+
+test('regression: long Gini unit stays above the plot, not attached to a left-overflowing axis tick', () => {
+  const svg = chartSVG({ ...args, width: 300, unit: 'indeks 0–1', sumA: { values: [0.3, 0.4, 0.5] }, sumB: { values: [0.2, 0.3, 0.4] } });
+  assert.match(svg, /<text data-chart-unit="true" x="64" y="16" font-size="14">indeks 0–1<\/text>/);
+  assert.doesNotMatch(svg, /text-anchor="end">[^<]+ indeks/);
+});
+
+test('regression: unapproved preview exposes neither observation points nor summary figures', () => {
+  const { indicator, comparison } = methodFixture('mean');
+  for (const pending of ['pending', 'blocked']) {
+    const preview = comparisonPreviewView(comparison, { ...indicator, audit_status: pending });
+    assert.equal(preview.numbers, '');
+    assert.doesNotMatch(preview.chart, /<svg|tabindex="0"|10,00/);
+    assert.match(preview.chart, /Pemeriksaan metode belum selesai/);
+  }
+  const blocked = comparisonPreviewView({ ...comparison, blocked: true }, indicator);
+  assert.equal(blocked.numbers, '');
+  assert.doesNotMatch(blocked.chart, /<svg/);
+});
+
+test('regression: preview uses indicator precision and hides incompatible period aggregates', () => {
+  const { indicator, comparison } = methodFixture('mean');
+  const preview = comparisonPreviewView(comparison, { ...indicator, display_precision: 3 });
+  assert.match(preview.numbers, /Tidak tersedia/);
+  assert.match(preview.numbers, /4,000 %/);
+});
 
 test('calendar includes every elapsed year: no compression of transition years', () => {
   const model = buildChartModel(args);
@@ -108,6 +176,6 @@ test('median, extremes and relative time helpers behave', () => {
   assert.equal(relativeID('2026-09-26', '2026-09-27'), 'kemarin');
   assert.equal(relativeID('2026-09-20', '2026-09-27'), '7 hari lalu');
   assert.equal(sourceKind('law'), 'Primer');
-  assert.equal(sourceKind('statistics'), 'Data/metode resmi');
+  assert.equal(sourceKind('statistics'), 'Data/metode statistik');
   assert.equal(sourceKind('statistics-secondary'), 'Pembanding sekunder');
 });

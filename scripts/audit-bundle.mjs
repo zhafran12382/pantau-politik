@@ -1,24 +1,29 @@
-import { readdir } from 'node:fs/promises';
-import { gzipSync } from 'node:zlib';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { JSDOM } from 'jsdom';
+import { measureInitialAssets } from './lib/assets.mjs';
 
-const dist = new URL('../dist/', import.meta.url).pathname;
-if (!existsSync(dist)) { console.error('dist/ belum ada.'); process.exit(1); }
-async function jsFiles(dir, out = []) {
-  for (const e of await readdir(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) await jsFiles(p, out);
-    else if (e.name.endsWith('.js')) out.push(p);
+const dist = path.resolve(process.env.DIST_DIR || 'dist');
+async function htmlFiles(directory) {
+  const result = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const file = path.join(directory, entry.name);
+    result.push(...(entry.isDirectory() ? await htmlFiles(file) : file.endsWith('.html') ? [file] : []));
   }
-  return out;
+  return result;
 }
-const files = await jsFiles(dist);
-let total = 0;
-for (const f of files) {
-  const buf = readFileSync(f);
-  // Hanya hitung JS milik situs (abaikan jika nama berisi chunk vendor eksternal — di MVP ini semua milik situs).
-  total += gzipSync(buf).length;
+const files = await htmlFiles(dist);
+let maximum = 0;
+for (const file of files) {
+  const html = await readFile(file, 'utf8');
+  const route = '/' + path.relative(dist, file).replaceAll(path.sep, '/').replace(/index\.html$/, '');
+  const dom = new JSDOM(html, { url: `http://localhost${route}` });
+  const result = await measureInitialAssets(dom.window.document, dist, html);
+  dom.window.close();
+  maximum = Math.max(maximum, result.jsGzip);
+  console.log(`${route}: ${(result.jsGzip / 1024).toFixed(1)} KiB gzip JS, ${Math.round(result.initialBytes / 1024)} KiB aset awal`);
+  if (result.jsGzip > 150 * 1024 || result.initialBytes > 1024 * 1024) {
+    throw new Error(`${route}: budget halaman terlampaui`);
+  }
 }
-console.log(`JS gzip total: ${(total / 1024).toFixed(1)} KB pada ${files.length} berkas. Batas: 150 KB awal per halaman (cek manual per rute).`);
-if (total > 300 * 1024) { console.error('Bundel terlalu besar.'); process.exit(1); }
+console.log(`Budget ${files.length} halaman lulus; JS awal maksimum ${(maximum / 1024).toFixed(1)} KiB gzip. Imported chunks termasuk dalam hitungan.`);

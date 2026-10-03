@@ -3,6 +3,10 @@ export const DEFAULT_COMPARISON = { a: 'admin-2004-2014', b: 'admin-2014-2024', 
 export function buildComparisonQuery(state) {
   return new URLSearchParams({ a: state.a, b: state.b, indikator: state.indikator, mode: state.mode || 'kalender' }).toString();
 }
+export function buildComparisonUrl(location, state) {
+  return `${location.pathname}?${buildComparisonQuery(state)}${location.hash || ''}`;
+}
+
 export function parseComparisonParams(queryString, { adminIds, indicatorIds, defaults = DEFAULT_COMPARISON }) {
   const params = new URLSearchParams(queryString || '');
   const notices = [];

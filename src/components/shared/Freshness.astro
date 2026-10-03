@@ -1,9 +1,7 @@
 ---
-import { isStale, todayJakartaISO, formatTanggalID, relativeID } from '../../lib/dates/dates.mjs';
-interface Props { date: string; kind?: string }
-const { date, kind = 'Pemeriksaan editorial dan sumber' } = Astro.props;
-const today = todayJakartaISO();
-const stale = isStale(date, today);
-const relative = relativeID(date, today) || '';
+import { isStale, todayJakartaISO, formatTanggalID } from '../../lib/dates/dates.mjs';
+interface Props { date: string; kind?: string; }
+const { date, kind = 'Pemeriksaan sumber tercatat' } = Astro.props;
+const stale = isStale(date, todayJakartaISO());
 ---
-<p class:list={['meta', { 'freshness--stale': stale }]} title={`${kind}: ${formatTanggalID(date)}`}>{stale ? 'Belum diperiksa ulang sejak' : 'Diperiksa'} {relative} · <time datetime={date}>{formatTanggalID(date)}</time></p>
+<p class:list={['meta', { 'freshness--stale': stale }]} title={`${kind}: ${formatTanggalID(date)}`}>{stale ? 'Belum diperiksa ulang sejak' : 'Diperiksa'} <time datetime={date}>{formatTanggalID(date)}</time></p>

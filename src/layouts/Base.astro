@@ -36,19 +36,25 @@ const editionDate = new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jak
   <body>
     <a class="skip" href="#konten">Lewati ke konten</a>
     <header class="site-header">
-      <div class="archive-strip" role="note" aria-label="Status arsip"><div class="container"><span>Arsip publik</span><span>Draf pratinjau — belum audit editorial</span></div></div>
+      <div class="archive-strip" role="note" aria-label="Status arsip">
+        <div class="container">
+          <span class="archive-strip__status">Arsip publik</span>
+          <span>Edisi pratinjau · Belum audit editorial</span>
+        </div>
+      </div>
       <div class="container header-inner">
         <div class="masthead-row masthead-nameplate">
-          <a class="brand" href="/" aria-label="Pantau Politik — beranda"><BrandMark /></a>
+          <a class="brand" href="/" aria-label="Pantau Politik, beranda"><BrandMark /></a>
+          <p class="meta masthead-caption">Register isu, kronologi, dan sumber untuk diperiksa.</p>
         </div>
         <div class="dateline-row dateline">
-          <span class="file-code">Berkas PP-Arsip · Edisi pratinjau</span>
-          <span>Jakarta · {editionDate}</span>
-          <span>Tanpa akun · Tanpa tebakan</span>
+          <span class="file-code">Berkas PP-Arsip</span>
+          <span>Edisi dibangun {editionDate}</span>
+          <span>Tanpa akun · Metode terbuka</span>
         </div>
         <nav class="site-nav" aria-label="Seksi utama">
-          <a href="/" aria-current={reading ? 'page' : undefined}>Pantau</a>
-          <a href="/bandingkan/" aria-current={comparing ? 'page' : undefined}>Bandingkan</a>
+          <a href="/" aria-current={reading ? (path === '/' ? 'page' : 'location') : undefined}>Pantau</a>
+          <a href="/bandingkan/" aria-current={comparing ? (path === '/bandingkan/' ? 'page' : 'location') : undefined}>Bandingkan</a>
           <a href="/metode/" aria-current={onMethod ? 'page' : undefined}>Metode</a>
         </nav>
       </div>
@@ -58,14 +64,14 @@ const editionDate = new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jak
       <div class="container footer-inner">
         <div class="footer-about">
           <p class="colophon">Pantau Politik</p>
-          <p class="meta">Memahami isu, mengikuti konteks, dan membaca data beserta sumbernya.</p>
-          <p class="meta footer-dateline"><span class="file-code">Kolofon arsip</span> · Diterbitkan sebagai arsip publik pratinjau.</p>
+          <p class="meta">Memahami isu dan membaca data beserta bukti, sumber, serta batas metodenya.</p>
+          <p class="meta footer-dateline"><span class="file-code">Kolofon arsip</span> · Pratinjau pengembangan.</p>
         </div>
         <nav class="footer-links" aria-label="Informasi pengelola">
           <a href="/metode/">Metode</a><a href="/tentang/">Tentang</a>
           <a href="/editorial/">Editorial</a><a href="/koreksi/">Koreksi</a><a href="/privasi/">Privasi</a>
         </nav>
-        <p class="footer-note footer-note--strong">Pratinjau pengembangan: materi dan dataset awal masih memerlukan audit editorial sebelum dapat dijadikan rujukan. Identitas pengelola dan kontak koreksi belum ditetapkan.</p>
+        <p class="footer-note footer-note--strong">Materi dan dataset awal belum menjalani audit editorial menyeluruh. Identitas pengelola dan kontak koreksi belum ditetapkan. Tanggal edisi adalah tanggal build, bukan tanggal pemeriksaan sumber.</p>
       </div>
     </footer>
   </body>

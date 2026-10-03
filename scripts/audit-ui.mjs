@@ -3,11 +3,11 @@
 import { readFile, readdir, stat, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { gzipSync } from 'node:zlib';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { openSync } from 'fontkit';
+import { measureInitialAssets } from './lib/assets.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(process.env.DIST_DIR || 'dist');
@@ -42,31 +42,15 @@ for (const file of htmlFiles) {
       for (const id of (element.getAttribute(attribute) || '').split(/\s+/).filter(Boolean)) assert.ok(doc.getElementById(id), `${route}: missing ${id}`);
     }
   }
-  const assets = new Set();
-  const queue = [];
-  for (const element of doc.querySelectorAll('script[src], link[rel="stylesheet"], link[rel="preload"], link[rel="modulepreload"]')) queue.push(element.src || element.href);
-  let jsGzip = 0, initialBytes = Buffer.byteLength(html), fontBytes = 0;
   for (const script of doc.querySelectorAll('script:not([src])')) {
     if (['application/json', 'application/ld+json'].includes(script.type)) continue;
     if (script.textContent.trim()) errors.push(`${route}: inline executable script violates script-src self`);
   }
-  while (queue.length) {
-    const url = new URL(queue.shift(), dom.window.location.href);
-    if (url.origin !== dom.window.location.origin) throw new Error(`${route}: external initial asset ${url}`);
-    const local = path.join(root, decodeURIComponent(url.pathname));
-    if (assets.has(local)) continue;
-    assets.add(local);
-    const buffer = await readFile(local);
-    initialBytes += buffer.length;
-    if (local.endsWith('.woff2')) fontBytes += buffer.length;
-    if (local.endsWith('.js')) jsGzip += gzipSync(buffer).length;
-    if (local.endsWith('.css')) {
-      const css = buffer.toString();
-      assert.ok(css.includes('Manrope'), 'Manrope required in CSS');
-      assert.ok(!css.includes('GeistVariable'), 'Old font must not be requested');
-      for (const match of css.matchAll(/url\(["']?([^\s"')]+)["']?\)/g)) if (!match[1].startsWith('data:')) queue.push(new URL(match[1], url).href);
-      const style = doc.createElement('style'); style.textContent = css; doc.head.append(style);
-    }
+  const { jsGzip, initialBytes, fontBytes, styles } = await measureInitialAssets(doc, root, html);
+  assert.ok(styles.join('\n').includes('Manrope'), 'Manrope required in CSS');
+  assert.ok(!styles.join('\n').includes('GeistVariable'), 'Old font must not be requested');
+  for (const css of styles) {
+    const style = doc.createElement('style'); style.textContent = css; doc.head.append(style);
   }
   assert.ok(jsGzip <= 150 * 1024, `${route}: JS budget`);
   assert.ok(initialBytes <= 1024 * 1024, `${route}: initial asset budget`);
@@ -91,6 +75,8 @@ report.font = { family: font.familyName, bytes: (await stat(fontFile)).size, tab
 report.artifactHashes = {};
 for (const file of files) report.artifactHashes[path.relative(root, file)] = createHash('sha256').update(await readFile(file)).digest('hex');
 await mkdir('.reports', { recursive: true });
+report.passed = errors.length === 0;
+report.errors = errors;
 await writeFile('.reports/design-audit.json', JSON.stringify(report, null, 2) + '\n');
 if (errors.length) { for (const error of errors) console.error(error); process.exit(1); }
 console.log('Structural accessibility, font and asset checks passed. Layout/zoom/TalkBack still require a real browser.');

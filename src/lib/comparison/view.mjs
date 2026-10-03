@@ -7,11 +7,11 @@ export function safeSourceUrl(url) {
   catch { return null; }
 }
 
-// Primer: dokumen hukum/putusan/arsip resmi. Data resmi: publikasi statistik.
+// Jenis sumber menjelaskan dokumen, bukan otoritas atau audit situs.
 // Sekunder: kompilasi pihak ketiga untuk pemeriksaan silang.
 export function sourceKind(type) {
   if (['law', 'court', 'official'].includes(type)) return 'Primer';
-  if (['statistics', 'method'].includes(type)) return 'Data/metode resmi';
+  if (['statistics', 'method'].includes(type)) return 'Data/metode statistik';
   return 'Pembanding sekunder';
 }
 
@@ -41,7 +41,7 @@ function chartArgs(comparison, indicator, mode, markers) {
   for (let y = Math.min(...comparison.yearsA, ...comparison.yearsB); y <= Math.max(...comparison.yearsA, ...comparison.yearsB); y++) {
     if (!inSpan.has(y)) span.push(y);
   }
-  // Hanya marker terverifikasi editorial yang tampil sebagai anotasi.
+  // Flag data memilih anotasi konteks; bukan bukti audit editorial manusia.
   const forMode = mode === 'setara'
     ? []
     : markers.filter(m => m.verified && (comparison.yearsA.includes(m.year) || comparison.yearsB.includes(m.year) || span.includes(m.year)));
@@ -60,9 +60,23 @@ function chartArgs(comparison, indicator, mode, markers) {
 }
 
 export function chartFor(comparison, indicator, mode, width, markers = []) {
-  if (comparison.blocked) return '<p class="notice">Data belum dapat dibandingkan. Pemeriksaan metode belum selesai. <a href="/metode/">Baca metode.</a></p>';
+  if (comparison.blocked || indicator.audit_status !== 'approved') return '<p class="notice">Data belum dapat dibandingkan. Pemeriksaan metode belum selesai. <a href="/metode/">Baca metode.</a></p>';
   const args = chartArgs(comparison, indicator, mode, markers);
   return width ? chartSVG({ ...args, width }) : responsiveChart(args);
+}
+
+export function comparisonPreviewView(comparison, indicator) {
+  const chart = chartFor(comparison, indicator, 'kalender');
+  if (comparison.blocked || indicator.audit_status !== 'approved') return { chart, numbers: '' };
+  const numbers = [comparison.sumA, comparison.sumB].map((sum, i) => {
+    const years = i === 0 ? comparison.yearsA : comparison.yearsB;
+    const isMean = indicator.stat_kind === 'mean';
+    const raw = sum.compatible ? (isMean ? sum.stat?.mean ?? null : sum.stat?.diff ?? null) : null;
+    const unit = isMean ? indicator.unit : indicator.id === 'gini' ? 'poin indeks' : 'poin persentase';
+    const label = isMean ? (sum.complete ? 'rata-rata tahunan' : 'rata-rata data yang ada') : 'perubahan awal–akhir';
+    return `<p><strong class="display-number numeric">${raw === null ? 'Tidak tersedia' : `${e(formatID(raw, indicator.display_precision))} ${e(unit)}`}</strong><small>${years[0]}–${years.at(-1)} · ${e(label)}${!sum.compatible ? ' · versi seri tidak kompatibel' : ''}</small></p>`;
+  }).join('');
+  return { chart, numbers };
 }
 
 function summaryMarkup(administration, summary, indicator, blocked) {
@@ -82,14 +96,14 @@ function summaryMarkup(administration, summary, indicator, blocked) {
     } else if (summary.stat?.diff !== null && summary.stat?.diff !== undefined) {
       rows += row('Perubahan awal–akhir', `${formatID(summary.stat.diff, precision)} ${indicator.id === 'gini' ? 'poin indeks' : 'poin persentase'}`);
     }
-    if (summary.median !== null && summary.median !== undefined && summary.stat?.kind !== 'mean') rows += row('Median', value(summary.median));
+    if (summary.compatible && summary.median !== null && summary.median !== undefined && summary.stat?.kind !== 'mean') rows += row('Median', value(summary.median));
   }
-  const explanation = blocked ? 'Menunggu pemeriksaan metode.' : !summary.compatible ? 'Versi seri berubah. Statistik lintas segmen tidak dihitung.' : !summary.complete ? 'Rentang belum lengkap. Perubahan awal–akhir diblokir.' : '';
+  const explanation = blocked ? 'Menunggu pemeriksaan metode.' : !summary.compatible ? 'Versi seri berubah atau belum diketahui. Statistik lintas segmen tidak dihitung.' : !summary.complete ? 'Rentang belum lengkap. Perubahan awal–akhir diblokir.' : '';
   return `<section class="period-summary" aria-label="Ringkasan ${e(administration.label)}"><h3>${e(administration.label)}</h3><p class="meta">Data ${years[0]}–${years.at(-1)} · ${e(coverage)}</p><dl>${rows}</dl>${explanation ? `<p class="meta">${e(explanation)}</p>` : ''}<details class="method-tip"><summary>Cara membaca angka ini</summary><p>${e(indicator.id === 'gini' ? 'Selisih dinyatakan dalam poin indeks skala 0–1, bukan persen.' : indicator.stat_kind === 'mean' ? 'Rata-rata adalah rata-rata aritmetika laju tahunan, bukan total pertumbuhan. Nilai awal–akhir mengacu pada batas rentang data.' : 'Selisih dinyatakan dalam poin persentase (akhir dikurangi awal), bukan persen. Nilai awal–akhir mengacu pada batas rentang data.')}</p></details></section>`;
 }
 
 function deltaMarkup(comparison, indicator) {
-  if (comparison.blocked || !comparison.crossCompatible) return '';
+  if (comparison.blocked || indicator.audit_status !== 'approved' || !comparison.crossCompatible) return '';
   const unitWord = indicator.id === 'gini' ? 'poin indeks'
     : indicator.stat_kind === 'mean'
       ? (indicator.unit === '%' ? 'poin persentase' : indicator.unit)
@@ -107,7 +121,8 @@ function deltaMarkup(comparison, indicator) {
 }
 
 export function comparisonView(comparison, indicator, sources, mode = 'kalender', markers = []) {
-  const { admA, admB, yearsA, yearsB, sumA, sumB, blocked } = comparison;
+  const { admA, admB, yearsA, yearsB, sumA, sumB } = comparison;
+  const blocked = comparison.blocked || indicator.audit_status !== 'approved';
   const fmt = raw => raw === null || raw === undefined ? 'Tidak tersedia' : formatID(raw, indicator.display_precision);
   let tableRows;
   if (blocked) tableRows = '<tr><td colspan="3">Data belum disetujui untuk perbandingan.</td></tr>';

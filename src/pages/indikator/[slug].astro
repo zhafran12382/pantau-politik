@@ -13,9 +13,9 @@ const comparison = comparisonFor(indicator, administrations, observations, 'admi
 ---
 <Base title={`${indicator.label}: definisi dan konteks`} description={indicator.definition} canonicalPath={`/indikator/${indicator.id}/`}>
   <nav class="breadcrumb" aria-label="Jejak halaman"><a href="/bandingkan/">← Pembanding</a></nav>
-  <header class="page-intro"><p class="eyebrow">Memahami indikator</p><h1>{indicator.label}</h1><p class="lead">{indicator.definition}</p><p class="meta">Satuan: {indicator.unit} · Rujukan: {indicator.reference_period}</p><p>{indicator.comparability_notes}</p>
+  <header class="page-intro"><div class="filehead"><span class="filing-tab">BERKAS INDIKATOR</span><span class="file-code">{indicator.id}</span></div><h1>{indicator.label}</h1><p class="lead">{indicator.definition}</p><p class="meta">Satuan: {indicator.unit} · Rujukan: {indicator.reference_period}</p><p>{indicator.comparability_notes}</p>
     <p class="notice">Dataset awal dalam pratinjau ini masih memerlukan audit editorial sebelum rilis publik.</p>
-    <div><a class="button" href={`/bandingkan/?a=admin-2004-2014&b=admin-2014-2024&indikator=${indicator.id}&mode=kalender`}>Jelajahi pada pembanding →</a></div>
+    <div><a class="button" href={`/bandingkan/?a=admin-2004-2014&b=admin-2014-2024&indikator=${indicator.id}&mode=kalender`}>Jelajahi pada pembanding</a></div>
   </header>
   <ComparisonPanel comparison={comparison} indicator={indicator} markers={markers} />
 </Base>

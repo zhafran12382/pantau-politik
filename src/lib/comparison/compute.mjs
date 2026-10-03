@@ -27,12 +27,14 @@ export function comparisonFor(indicator, administrations, observations, adminAId
     const summary = summarizeSeries(years, byYear, indicator.stat_kind);
     const seriesVersions = years.map(year => versions.get(year) ?? null);
     const versionCount = new Set(seriesVersions.filter(Boolean)).size;
-    const compatible = versionCount <= 1;
-    return { ...summary, seriesVersions, compatible, stat: compatible ? summary.stat : null };
+    const knownVersions = summary.values.every((value, i) => value === null || Boolean(seriesVersions[i]));
+    const compatible = knownVersions && versionCount <= 1;
+    return { ...summary, seriesVersions, compatible, stat: compatible ? summary.stat : null,
+      median: compatible ? summary.median : null };
   };
   const sumA = summarize(yearsA), sumB = summarize(yearsB);
   return { admA, admB, yearsA, yearsB, sumA, sumB,
     blocked: indicator.audit_status !== 'approved',
-    crossCompatible: new Set([...sumA.seriesVersions, ...sumB.seriesVersions].filter(Boolean)).size <= 1,
+    crossCompatible: sumA.compatible && sumB.compatible && new Set([...sumA.seriesVersions, ...sumB.seriesVersions].filter(Boolean)).size <= 1,
   };
 }

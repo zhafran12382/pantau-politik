@@ -2,8 +2,8 @@
 
 ## Platform Politik Interaktif · Lembaran Negara
 
-**Versi:** 2.0-draf · 30 September 2026  
-**Status:** kontrak arah A (CP01). Bagian v1.x bertanda “terimplementasi” menggambarkan build lama dan akan digantikan bertahap per checkpoint; jangan jadikan acuan visual baru.  
+**Versi:** 3.0-draf · Dossier Vintage
+**Status:** arah C “Arsip Ruang Redaksi · Dossier Vintage” pada Bab 18 adalah acuan visual aktif. Pemilik meminta implementasi refinemen vintage/dossier dari referensi `docs/redesign-vintage/homepage-v2.png`. Bab 1–17 memuat riwayat arah A/B dan tidak menggantikan kontrak aktif; klaim implementasi historis bukan bukti QA build sekarang.
 **Riwayat:** 2.0 mengganti “Editorial Precision” dengan “Lembaran Negara” (keputusan pemilik 29 Sep 2026): register isu bernomor, serif editorial + Manrope, garis aturan, cap status, Jejak Bukti. Kontrak: `docs/checkpoints/CP01-kontrak-arah-A.md`.  
 **Nama kerja:** Pantau Politik. Identitas akhir mengikuti keputusan pemilik produk.  
 **Acuan produk:** PRD MVP v1.0 dan `../RENCANA_IMPLEMENTASI_PLATFORM_POLITIK_MVP.md`.
@@ -724,3 +724,36 @@ Palet: kertas `#f3ecdc`, permukaan `#faf6ea`, tinta `#211a12`,
 merah cap `#a32c21` (15 pasangan kontras terverifikasi, teks ≥4,5:1).
 Tipografi tiga peran: serif display, sans isi, caps + mono untuk kode berkas.
 Grafik/tabel tetap fungsional di dalam bingkai exhibit.
+
+### 18.1. Refinemen Dossier Vintage
+
+Rencana terinci: `docs/redesign-vintage/PLAN.md`; keputusan rencana CP18.
+Metafora dossier diperkuat pada pembungkus berkas/bukti, bukan pada data
+atau klaim otoritas. ENERGY 2 / RHYTHM 2 / MOTION 1.
+
+- Papan nama berupa tipografi, strip arsip tinta tipis, dateline menjelaskan
+  tanggal build, navigasi utama terlihat tanpa header sticky tinggi.
+- Lead isu memiliki filing tab/kode dari register-map dan satu offset solid;
+  pendamping berbobot lebih ringan. Register memakai baris indeks berkas.
+- Kepala berkas dan frame putus-putus mengelompokkan bukti. JEJAK BUKTI
+  adalah label sumber, bukan cap tambahan atau action yang menduplikasi
+  Buka sumber.
+- Tekstur hanya CSS pada kertas/frame; permukaan teks dan plot tetap
+  solid. Tidak memakai gambar referensi sebagai background, paperclip
+  raster, noda, watermark, robekan atau bilah penutup informasi.
+- Source Serif 4 weight 600 untuk display, Manrope untuk isi/angka,
+  mono sistem hanya metadata berkas. Tidak menambah aset font.
+- Token radius dua px, spasi mengikuti hubungan isi, target kontrol
+  minimal 44 px dan state dapat membungkus tanpa memotong judul/status.
+- Desktop, intermediate dan narrow adalah keadaan layout yang berbeda;
+  tidak ada dua toolbar sticky yang menutup fokus/isi. Tema terang saja.
+- Halaman isu menyatukan dampak/bukti tanpa kehilangan sitasi/proyeksi.
+  Pembanding tetap menyediakan tabel bawaan tanpa JS dan frame exhibit
+  yang tidak memberi bobot pemenang pada seri A/B.
+- Missing, perubahan versi, kelayakan statistik dan ekspor adalah bagian
+  dari ketepatan tampilan. Desain tidak mengubah angka atau flag editorial.
+
+Nilai hex, wording cap, sumber dan kode berasal dari kontrak/konten, bukan
+OCR atau perkiraan gambar generatif. Referensi visual bukan bukti kontras
+render, font persis, viewport, zoom atau pengujian browser. Hasil QA nyata
+dicatat di checkpoint implementasi tersendiri.
